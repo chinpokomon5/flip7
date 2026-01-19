@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flip 7 Scoreboard</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --win-color: #ffd700; /* Richer gold */
+            --bg-color: #ffffff;
+            --footer-bg: #f0f4f7; /* Lightened background */
+            --text-color: #1a1a1a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px; /* Wider for iPad */
+            padding-bottom: 180px; /* Extra space for large footer */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            table-layout: fixed;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            padding: 20px 5px;
+            font-size: 2.5rem; /* Large names */
+            border-bottom: 3px solid #eee;
+            color: var(--primary-color);
+        }
+
+        td {
+            padding: 12px 5px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+        }
+
+        .round-num {
+            width: 60px;
+            font-size: 1.2rem;
+            color: #bbb;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 85%;
+            padding: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 2rem; /* Large numbers for entry */
+            font-weight: bold;
+            -webkit-appearance: none;
+            background-color: #fafafa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .controls {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 900px;
+            background: var(--footer-bg);
+            color: var(--text-color);
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr 1fr 1fr;
+            padding: 20px 0 40px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+
+        .total-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 15px;
+            margin: 0 5px;
+            padding: 10px 0;
+            border: 2px solid transparent;
+        }
+
+        .total-val {
+            font-size: 3.5rem; /* Huge scores for distance reading */
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .total-label {
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        /* Lead Indicator Styling */
+        .is-leading {
+            background-color: var(--win-color);
+            border-color: #e6be00;
+            transform: translateY(-15px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .crown {
+            font-size: 1.5rem;
+            height: 1.5rem;
+            visibility: hidden;
+        }
+
+        .is-leading .crown {
+            visibility: visible;
+        }
+
+        .sum-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .reset-link {
+            margin-top: 30px;
+            display: inline-block;
+            color: #cc0000;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <table id="scoreTable">
+        <thead>
+            <tr>
+                <th class="round-num"></th>
+                <th>爸</th>
+                <th>媽</th>
+                <th>誠</th>
+                <th>娜</th>
+            </tr>
+        </thead>
+        <tbody id="scoreBody">
+            </tbody>
+    </table>
+
+    <div class="controls">
+        <button onclick="addRow()">+ NEXT ROUND</button>
+        <br>
+        <a href="#" class="reset-link" onclick="resetScores()">RESET GAME</a>
+    </div>
+</div>
+
+<footer>
+    <div class="sum-icon">Σ</div>
+    <div class="total-box" id="box-0">
+        <span class="crown">👑</span>
+        <span class="total-label">爸</span>
+        <span class="total-val" id="total-0">0</span>
+    </div>
+    <div class="total-box" id="box-1">
+        <span class="crown">👑</span>
+        <span class="total-label">媽</span>
+        <span class="total-val" id="total-1">0</span>
+    </div>
+    <div class="total-box" id="box-2">
+        <span class="crown">👑</span>
+        <span class="total-label">誠</span>
+        <span class="total-val" id="total-2">0</span>
+    </div>
+    <div class="total-box" id="box-3">
+        <span class="crown">👑</span>
+        <span class="total-label">娜</span>
+        <span class="total-val" id="total-3">0</span>
+    </div>
+</footer>
+
+<script>
+    let roundCount = 0;
+
+    // Start with 2 empty rounds for immediate play
+    addRow();
+    addRow();
+
+    function addRow() {
+        roundCount++;
+        const tbody = document.getElementById('scoreBody');
+        const row = document.createElement('tr');
+        
+        let cells = `<td class="round-num">${roundCount}</td>`;
+        for (let i = 0; i < 4; i++) {
+            cells += `
+                <td>
+                    <input 
+                        type="number" 
+                        inputmode="numeric" 
+                        pattern="[0-9]*" 
+                        class="p${i}-input" 
+                        oninput="calculateTotals()"
+                        placeholder="">
+                </td>`;
+        }
+        
+        row.innerHTML = cells;
+        tbody.appendChild(row);
+        
+        // Scroll slightly so the new row is visible above the footer
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+
+    function calculateTotals() {
+        let sums = [0, 0, 0, 0];
+        
+        for (let i = 0; i < 4; i++) {
+            const inputs = document.querySelectorAll(`.p${i}-input`);
+            inputs.forEach(input => {
+                const val = parseInt(input.value);
+                if (!isNaN(val)) {
+                    sums[i] += val;
+                }
+            });
+            document.getElementById(`total-${i}`).innerText = sums[i];
+        }
+
+        const maxScore = Math.max(...sums);
+        
+        for (let i = 0; i < 4; i++) {
+            const box = document.getElementById(`box-${i}`);
+            // Highlight leader only if score is > 0
+            if (sums[i] === maxScore && maxScore > 0) {
+                box.classList.add('is-leading');
+            } else {
+                box.classList.remove('is-leading');
+            }
+        }
+    }
+
+    function resetScores() {
+        if (confirm("Are you sure you want to clear all scores?")) {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => input.value = '');
+            calculateTotals();
+            // Optional: reset to round 1? For now just clears values.
+        }
+    }
+</script>
+
+</body>
+</html>
