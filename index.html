@@ -7,9 +7,9 @@
     <style>
         :root {
             --primary-color: #2c3e50;
-            --win-color: #ffd700; /* Richer gold */
+            --win-color: #ffd700;
             --bg-color: #ffffff;
-            --footer-bg: #f0f4f7; /* Lightened background */
+            --footer-bg: #f0f4f7;
             --text-color: #1a1a1a;
         }
 
@@ -22,12 +22,21 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Clicking this area will hide keyboard */
+        #tap-boundary {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
             width: 100%;
-            max-width: 900px; /* Wider for iPad */
-            padding-bottom: 180px; /* Extra space for large footer */
+            max-width: 900px;
+            padding-bottom: 220px; 
         }
 
         table {
@@ -40,7 +49,7 @@
         th {
             background-color: #f8f9fa;
             padding: 20px 5px;
-            font-size: 2.5rem; /* Large names */
+            font-size: 2.5rem;
             border-bottom: 3px solid #eee;
             color: var(--primary-color);
         }
@@ -58,16 +67,23 @@
             font-weight: bold;
         }
 
+        .input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 90%;
+        }
+
         input[type="number"] {
-            width: 85%;
+            width: 100%;
             padding: 15px 0;
             border: 2px solid #ddd;
             border-radius: 12px;
             text-align: center;
-            font-size: 2rem; /* Large numbers for entry */
+            font-size: 2.2rem;
             font-weight: bold;
             -webkit-appearance: none;
             background-color: #fafafa;
+            box-sizing: border-box;
         }
 
         input:focus {
@@ -82,7 +98,7 @@
             text-align: center;
         }
 
-        button {
+        button.add-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -90,7 +106,6 @@
             border-radius: 40px;
             font-size: 1.5rem;
             font-weight: bold;
-            cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
@@ -107,6 +122,7 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
             text-align: center;
             border-top: 1px solid #ddd;
+            z-index: 100;
         }
 
         .total-box {
@@ -118,11 +134,10 @@
             border-radius: 15px;
             margin: 0 5px;
             padding: 10px 0;
-            border: 2px solid transparent;
         }
 
         .total-val {
-            font-size: 3.5rem; /* Huge scores for distance reading */
+            font-size: 3.5rem;
             font-weight: 900;
             line-height: 1;
         }
@@ -130,22 +145,17 @@
         .total-label {
             font-size: 1rem;
             font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 5px;
             color: #666;
         }
 
-        /* Lead Indicator Styling */
         .is-leading {
             background-color: var(--win-color);
-            border-color: #e6be00;
             transform: translateY(-15px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .crown {
             font-size: 1.5rem;
-            height: 1.5rem;
             visibility: hidden;
         }
 
@@ -159,7 +169,6 @@
             justify-content: center;
             font-size: 2rem;
             color: #999;
-            font-weight: bold;
         }
 
         .reset-link {
@@ -168,14 +177,13 @@
             color: #cc0000;
             text-decoration: none;
             font-size: 1.1rem;
-            font-weight: bold;
             opacity: 0.5;
         }
     </style>
 </head>
-<body>
+<body onclick="dismissKeyboard(event)">
 
-<div class="container">
+<div id="tap-boundary" class="container">
     <table id="scoreTable">
         <thead>
             <tr>
@@ -191,7 +199,7 @@
     </table>
 
     <div class="controls">
-        <button onclick="addRow()">+ NEXT ROUND</button>
+        <button class="add-btn" onclick="addRow()">+ NEXT ROUND</button>
         <br>
         <a href="#" class="reset-link" onclick="resetScores()">RESET GAME</a>
     </div>
@@ -224,7 +232,6 @@
 <script>
     let roundCount = 0;
 
-    // Start with 2 empty rounds for immediate play
     addRow();
     addRow();
 
@@ -237,45 +244,56 @@
         for (let i = 0; i < 4; i++) {
             cells += `
                 <td>
-                    <input 
-                        type="number" 
-                        inputmode="numeric" 
-                        pattern="[0-9]*" 
-                        class="p${i}-input" 
-                        oninput="calculateTotals()"
-                        placeholder="">
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            inputmode="numeric" 
+                            pattern="[0-9]*" 
+                            class="p${i}-input" 
+                            oninput="calculateTotals()"
+                            onkeydown="handleEnter(event)"
+                            placeholder="">
+                    </div>
                 </td>`;
         }
         
         row.innerHTML = cells;
         tbody.appendChild(row);
         
-        // Scroll slightly so the new row is visible above the footer
         window.scrollTo({
             top: document.body.scrollHeight,
             behavior: 'smooth'
         });
     }
 
+    // Hides keyboard when user clicks outside an input
+    function dismissKeyboard(event) {
+        if (event.target.tagName !== 'INPUT') {
+            document.activeElement.blur();
+        }
+    }
+
+    // Specifically for physical keyboards or iPads with keyboards
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            event.target.blur();
+        }
+    }
+
     function calculateTotals() {
         let sums = [0, 0, 0, 0];
-        
         for (let i = 0; i < 4; i++) {
             const inputs = document.querySelectorAll(`.p${i}-input`);
             inputs.forEach(input => {
                 const val = parseInt(input.value);
-                if (!isNaN(val)) {
-                    sums[i] += val;
-                }
+                if (!isNaN(val)) sums[i] += val;
             });
             document.getElementById(`total-${i}`).innerText = sums[i];
         }
 
         const maxScore = Math.max(...sums);
-        
         for (let i = 0; i < 4; i++) {
             const box = document.getElementById(`box-${i}`);
-            // Highlight leader only if score is > 0
             if (sums[i] === maxScore && maxScore > 0) {
                 box.classList.add('is-leading');
             } else {
@@ -285,11 +303,10 @@
     }
 
     function resetScores() {
-        if (confirm("Are you sure you want to clear all scores?")) {
+        if (confirm("Clear all scores?")) {
             const inputs = document.querySelectorAll('input');
             inputs.forEach(input => input.value = '');
             calculateTotals();
-            // Optional: reset to round 1? For now just clears values.
         }
     }
 </script>
