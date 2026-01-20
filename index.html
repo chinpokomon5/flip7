@@ -24,7 +24,7 @@
             --btn-reset-bg: #ff7675;
             
             /* Text Colors */
-            --text-color: #2d3436; /* Unified Dark Grey for Scores */
+            --text-color: #2d3436;
             
             /* Game Card Colors */
             --card-num-bg: #0984e3;
@@ -221,8 +221,6 @@
         .tally-box { display: flex; align-items: center; gap: 20px; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
         .tally-label { font-size: 1rem; font-weight: bold; color: #636e72; }
-        
-        /* UNIFIED COLOR: Using --text-color instead of blue */
         .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--text-color); min-width: 100px; text-align: right; }
 
         .overlay-body {
@@ -348,7 +346,6 @@
             text-transform: uppercase;
         }
 
-        /* UNIFIED COLOR: Using --text-color instead of blue */
         .flying-score {
             position: fixed;
             font-size: 5rem;
@@ -357,7 +354,6 @@
             z-index: 9999;
             pointer-events: none;
             transition: all 0.5s ease-in-out;
-            /* White shadow helps visibility over any background */
             text-shadow: 0px 0px 4px rgba(255,255,255,0.8);
         }
     </style>
@@ -434,7 +430,7 @@
         </div>
     </div>
     <div class="action-bar">
-        <button class="action-btn btn-bust" onclick="applyScore(0, false)">BUST</button>
+        <button class="action-btn btn-bust" onclick="triggerBust()">BUST</button>
         <button class="action-btn btn-manual" onclick="showManual()">MANUAL</button>
         <button class="action-btn btn-cancel" onclick="closeOverlay()">CANCEL</button>
         <button class="action-btn btn-ok" onclick="applyCurrentTally(true)">OK</button>
@@ -543,6 +539,15 @@
     function applyCurrentTally(animate) {
         const val = document.getElementById('currentTally').innerText;
         applyScore(val, animate, 'currentTally');
+    }
+
+    // New Function to handle BUST
+    function triggerBust() {
+        const tallyEl = document.getElementById('currentTally');
+        // Update display immediately so we fly a "0"
+        tallyEl.innerText = "0";
+        // Trigger the flight from the Tally location
+        applyScore(0, true, 'currentTally');
     }
 
     function applyScore(val, animate, sourceId) {
