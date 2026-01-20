@@ -5,22 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Flip 7 Pro</title>
     
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23f37021'%3E%3Cg transform='translate(256 256)'%3E%3Ctext x='0' y='20' font-family='sans-serif' font-weight='bold' font-size='300' text-anchor='middle' fill='white'%3E7%3C/text%3E%3C/g%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%23ff6b6b'%3E%3Cg transform='translate(256 256)'%3E%3Ctext x='0' y='20' font-family='sans-serif' font-weight='bold' font-size='300' text-anchor='middle' fill='white'%3E7%3C/text%3E%3C/g%3E%3C/svg%3E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --win-color: #ffd700;
-            --bg-color: #ffffff;
-            --footer-bg: #f8f9fa;
-            --card-num-bg: #007dc3;
-            --card-bonus-bg: #f37021;
-            --card-mult-bg: #92278f;
-            --btn-ok: #27ae60;
-            --btn-bust: #c0392b;
-            --text-color: #212529;
+            /* MODERN PALETTE */
+            --bg-color: #f0f2f5;
+            --header-gradient: linear-gradient(135deg, #ff9966, #ff5e62);
+            --card-bg: #ffffff;
+            
+            --footer-bg: #2d3436; /* Dark footer */
+            --footer-text: #dfe6e9;
+            
+            --accent-color: #ff6b6b;
+            --btn-add-bg: #2ecc71;
+            --btn-reset-bg: #ff7675;
+            
+            /* Game Card Colors */
+            --card-num-bg: #0984e3;
+            --card-bonus-bg: #e17055;
+            --card-mult-bg: #a29bfe;
+            
             --grid-cols: 50px 1fr 1fr 1fr 1fr;
         }
 
@@ -35,17 +42,17 @@
             height: 100dvh; 
             display: flex;
             flex-direction: column;
-            color: var(--text-color);
+            color: #2d3436;
         }
 
         /* --- FIXED HEADER --- */
         .app-header {
             flex-shrink: 0;
             width: 100%;
-            background-color: #f1f3f5;
-            border-bottom: 2px solid #dee2e6;
+            background: var(--header-gradient);
             z-index: 50;
             padding-top: env(safe-area-inset-top); 
+            box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4);
         }
 
         .header-content {
@@ -60,8 +67,10 @@
 
         .header-name {
             font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
         }
 
         /* --- SCROLLABLE CONTENT --- */
@@ -73,22 +82,29 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 180px; 
+            padding-top: 15px; /* Spacing for first card */
         }
 
-        /* --- SCORE ROWS --- */
+        /* --- MODERN SCORE ROWS (CARDS) --- */
         .round-row {
             display: grid;
             grid-template-columns: var(--grid-cols);
             align-items: center;
             text-align: center;
-            border-bottom: 1px solid #e9ecef;
-            padding: 4px 0;
+            
+            /* Card Styling */
+            background: var(--card-bg);
+            margin: 0 15px 12px 15px; /* Side margins and bottom gap */
+            padding: 10px 0;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
 
         .round-num {
             font-size: 1.2rem;
-            color: #adb5bd;
-            font-weight: bold;
+            color: #b2bec3;
+            font-weight: 800;
         }
 
         .score-cell {
@@ -97,20 +113,47 @@
 
         .score-display {
             width: 90%;
-            border: 2px solid #ced4da;
-            border-radius: 10px;
+            border: 2px solid #dfe6e9; /* Lighter border */
+            border-radius: 12px;
             font-size: 2.8rem;
             font-weight: 800;
-            background: #fdfdfd;
+            background: #fafafa;
             display: flex;
             align-items: center;
             justify-content: center;
             height: 3.6rem; 
-            color: var(--text-color);
+            color: #2d3436;
             margin: 0 auto;
         }
 
-        /* --- FOOTER --- */
+        /* --- BUTTON GROUP --- */
+        .controls-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .main-btn {
+            border: none;
+            padding: 18px 30px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .main-btn:active { transform: scale(0.95); }
+
+        .btn-add { background-color: var(--btn-add-bg); flex-grow: 2; justify-content: center; }
+        .btn-reset { background-color: var(--btn-reset-bg); flex-grow: 1; justify-content: center; opacity: 0.9; }
+
+        /* --- FOOTER (DARK THEME) --- */
         footer {
             position: fixed; 
             bottom: 0; 
@@ -119,10 +162,11 @@
             background: var(--footer-bg); 
             display: flex;
             justify-content: center;
-            box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
-            border-top: 1px solid #dee2e6;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+            border-top: none;
             z-index: 100;
             padding-bottom: env(safe-area-inset-bottom);
+            border-radius: 20px 20px 0 0; /* Rounded top corners */
         }
         
         .footer-content {
@@ -130,40 +174,21 @@
             max-width: 1000px;
             display: grid;
             grid-template-columns: var(--grid-cols);
-            padding: 10px 0 20px 0;
+            padding: 15px 0 25px 0;
             align-items: center;
         }
 
-        .total-box { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            transition: all 0.3s; 
-            border-radius: 15px; 
-            margin: 0 5px; 
-            padding: 5px 0; 
-        }
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
         
-        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; }
+        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; color: white; }
         
-        /* FIXED: Removed transform to prevent shifting up */
-        .is-leading { 
-            background-color: var(--win-color); 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
-        }
+        .is-leading { background-color: #fdcb6e; box-shadow: 0 0 20px rgba(253, 203, 110, 0.4); }
+        .is-leading .total-val { color: #2d3436; } /* Dark text on gold */
         
-        /* Keep crown layout reserved (visibility hidden vs none) to align numbers? 
-           Using display:block but hidden ensures consistent height if we want rows to align perfectly */
-        .crown { 
-            font-size: 1.5rem; 
-            height: 1.5rem; 
-            visibility: hidden; 
-            margin-bottom: 0px; 
-        }
+        .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: 0px; }
         .is-leading .crown { visibility: visible; }
         
-        .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ced4da; height: 100%; }
+        .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#636e72; height: 100%; }
 
         /* --- SCORING OVERLAY --- */
         #scoringOverlay {
@@ -181,21 +206,21 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 25px;
-            background: #f1f3f5;
-            border-bottom: 1px solid #dee2e6;
+            background: var(--bg-color); /* Matches body */
+            border-bottom: 1px solid #dfe6e9;
             flex-shrink: 0;
             height: 80px;
             padding-top: max(10px, env(safe-area-inset-top)); 
         }
 
         .header-left { display: flex; flex-direction: column; justify-content: center; }
-        .calc-title { font-size: 1rem; font-weight: 700; color: #868e96; letter-spacing: 1px; text-transform: uppercase; }
-        .player-name-display { font-size: 2.2rem; font-weight: 900; color: #212529; }
+        .calc-title { font-size: 1rem; font-weight: 700; color: #b2bec3; letter-spacing: 1px; text-transform: uppercase; }
+        .player-name-display { font-size: 2.2rem; font-weight: 900; color: #2d3436; }
         
         .tally-box { display: flex; align-items: center; gap: 20px; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
-        .tally-label { font-size: 1rem; font-weight: bold; color: #666; }
-        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary-color); min-width: 100px; text-align: right; }
+        .tally-label { font-size: 1rem; font-weight: bold; color: #636e72; }
+        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--card-num-bg); min-width: 100px; text-align: right; }
 
         .overlay-body {
             flex: 1;
@@ -227,7 +252,7 @@
         .card {
             width: 100%;
             height: 100%;
-            border-radius: 14px;
+            border-radius: 16px; /* Rounder cards */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -247,7 +272,7 @@
             outline: 8px solid #2ecc71; 
             outline-offset: -2px;
             transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
             opacity: 1;
             filter: grayscale(0%);
             z-index: 10;
@@ -258,33 +283,32 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             padding: 15px 20px 30px 20px;
-            background: #e9ecef;
+            background: #dfe6e9;
             flex-shrink: 0;
-            border-top: 1px solid #dee2e6;
             padding-bottom: max(30px, env(safe-area-inset-bottom));
         }
 
         .action-btn {
             padding: 22px 0;
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 1.4rem;
             font-weight: 800;
             color: white;
             box-shadow: 0 4px 0 rgba(0,0,0,0.1);
         }
 
-        .btn-bust { background: var(--btn-bust); }
-        .btn-manual { background: #495057; }
-        .btn-cancel { background: #adb5bd; color: #212529; }
-        .btn-ok { background: var(--btn-ok); }
+        .btn-bust { background: #d63031; }
+        .btn-manual { background: #636e72; }
+        .btn-cancel { background: #b2bec3; color: #2d3436; }
+        .btn-ok { background: #00b894; }
 
         #manualModal {
             display: none; 
             position: fixed;
             top: 50%; left: 50%; 
             transform: translate(-50%, -50%);
-            background: #212529; 
+            background: #2d3436; 
             padding: 40px; 
             border-radius: 30px; 
             z-index: 2000;
@@ -303,17 +327,17 @@
             font-size: 2.5rem; 
             border-radius: 50%; 
             border: none; 
-            background: #343a40; 
+            background: #636e72; 
             color: white; 
             font-weight: bold; 
         }
-        .num-btn:active { background: #495057; }
+        .num-btn:active { background: #b2bec3; }
 
         .manual-cancel-btn {
             width: 100%;
             padding: 18px;
-            background: #495057;
-            color: #adb5bd;
+            background: #636e72;
+            color: #dfe6e9;
             border: none;
             border-radius: 15px;
             font-size: 1.2rem;
@@ -325,10 +349,11 @@
             position: fixed;
             font-size: 5rem;
             font-weight: 900;
-            color: var(--primary-color);
+            color: var(--card-num-bg);
             z-index: 9999;
             pointer-events: none;
             transition: all 0.5s ease-in-out;
+            text-shadow: 2px 2px 0px white; /* Outline for visibility */
         }
     </style>
 </head>
@@ -346,8 +371,10 @@
 
 <div class="scroll-container" id="scrollContainer">
     <div id="roundsList"></div>
-    <div id="addRoundBtnContainer" style="text-align:center; padding: 30px;">
-        <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:18px 40px; border-radius:40px; font-size:1.5rem; font-weight:bold;">+ NEXT ROUND</button>
+    
+    <div class="controls-container" id="controlsContainer">
+        <button onclick="resetGame()" class="main-btn btn-reset">↺ NEW GAME</button>
+        <button onclick="addRow()" class="main-btn btn-add">+ NEXT ROUND</button>
     </div>
 </div>
 
@@ -421,9 +448,9 @@
         <button class="num-btn" onclick="pressNum(7)">7</button>
         <button class="num-btn" onclick="pressNum(8)">8</button>
         <button class="num-btn" onclick="pressNum(9)">9</button>
-        <button class="num-btn" onclick="pressNum('C')" style="background:var(--btn-bust)">C</button>
+        <button class="num-btn" onclick="pressNum('C')" style="background:#d63031">C</button>
         <button class="num-btn" onclick="pressNum(0)">0</button>
-        <button class="num-btn" onclick="pressNum('OK')" style="background:var(--btn-ok)">OK</button>
+        <button class="num-btn" onclick="pressNum('OK')" style="background:#00b894">OK</button>
     </div>
     <button class="manual-cancel-btn" onclick="closeManual()">CANCEL</button>
 </div>
@@ -449,10 +476,25 @@
         row.innerHTML = html;
         roundsList.appendChild(row);
 
-        const btn = document.getElementById('addRoundBtnContainer');
+        const controls = document.getElementById('controlsContainer');
         setTimeout(() => {
-            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 100);
+    }
+
+    function resetGame() {
+        if(confirm("Start a new game? This will clear all scores.")) {
+            // Clear rows
+            document.getElementById('roundsList').innerHTML = '';
+            activeRowId = 0;
+            // Reset totals to 0 in UI
+            for(let i=0; i<4; i++) {
+                document.getElementById(`total-${i}`).innerText = '0';
+            }
+            // Add first row
+            addRow();
+            calculateTotals();
+        }
     }
 
     function openScoring(el, playerIndex) {
@@ -493,7 +535,7 @@
         document.getElementById('currentTally').innerText = score;
         document.getElementById('flipBonusLabel').innerText = `Bonus: ${bonus > 0 ? '+15' : '0'}`;
         document.getElementById('cardCountLabel').innerText = `Cards: ${selectedCards.nums.size}/7`;
-        document.getElementById('cardCountLabel').style.color = (selectedCards.nums.size === 7) ? "#27ae60" : "#666";
+        document.getElementById('cardCountLabel').style.color = (selectedCards.nums.size === 7) ? "#27ae60" : "#636e72";
     }
 
     function applyCurrentTally(animate) {
@@ -517,7 +559,6 @@
         const sourceEl = document.getElementById(sourceId);
         const targetEl = activeCell;
 
-        // Determine containers to hide
         const containerId = (sourceId === 'currentTally') ? 'scoringOverlay' : 'manualModal';
         const container = document.getElementById(containerId);
 
@@ -538,10 +579,9 @@
 
         flyer.getBoundingClientRect(); 
 
-        // FIX: Ensure both overlays hide when manual entry is confirmed
         if (containerId === 'manualModal') {
             document.getElementById('manualModal').style.display = 'none';
-            document.getElementById('scoringOverlay').style.opacity = '0'; // Fade out overlay behind it
+            document.getElementById('scoringOverlay').style.opacity = '0';
         } else {
             container.style.opacity = '0';
         }
@@ -555,8 +595,6 @@
         setTimeout(() => {
             finalizeScore(val);
             flyer.remove();
-            
-            // Clean up overlay state
             document.getElementById('scoringOverlay').style.display = 'none';
             document.getElementById('scoringOverlay').style.opacity = '1';
         }, 500);
@@ -564,7 +602,7 @@
 
     function finalizeScore(val) {
         activeCell.innerText = val;
-        activeCell.style.color = "#212529";
+        activeCell.style.color = "#2d3436";
         activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
         calculateTotals();
@@ -609,6 +647,7 @@
 
     // Init
     addRow();
+    // Add a second row by default
     addRow();
 </script>
 </body>
