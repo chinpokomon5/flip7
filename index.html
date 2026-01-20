@@ -62,11 +62,15 @@
             padding: 15px 0;
             border: 2px solid #ced4da;
             border-radius: 12px;
-            font-size: 2.8rem; /* Large font for table cells */
+            font-size: 2.8rem;
             font-weight: 800;
             background: #fdfdfd;
             display: inline-block;
             transition: color 0.2s, transform 0.2s;
+            /* Ensures the box has height even when empty */
+            min-height: 3.4rem; 
+            vertical-align: middle;
+            line-height: 1.2;
         }
 
         /* --- SCORING OVERLAY --- */
@@ -99,7 +103,6 @@
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
         .tally-label { font-size: 1rem; font-weight: bold; color: #666; }
         
-        /* Tally Score Font Increased */
         .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary-color); min-width: 100px; text-align: right; }
 
         .overlay-body {
@@ -139,25 +142,19 @@
             font-weight: 900;
             color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            
-            /* STATE TRANSITIONS */
             transition: transform 0.1s, opacity 0.2s, filter 0.2s;
-            
-            /* DEFAULT STATE: Faded & Desaturated */
             opacity: 0.4;
             filter: grayscale(40%);
         }
 
-        /* CARD FONTS - INCREASED */
         .card.modifier { background: var(--card-bonus-bg); font-size: 2.5rem; }
         .card.multiplier { background: var(--card-mult-bg); font-size: 2.5rem; }
         .card.num { background: var(--card-num-bg); font-size: 4.5rem; }
         
-        /* SELECTED STATE: Vibrant & Large */
         .card.selected { 
             outline: 8px solid #2ecc71; 
-            outline-offset: -2px; /* Pulls outline inside slightly */
-            transform: scale(1.02); /* Pop out slightly */
+            outline-offset: -2px;
+            transform: scale(1.02);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             opacity: 1;
             filter: grayscale(0%);
@@ -213,7 +210,6 @@
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .num-btn { width: 80px; height: 80px; font-size: 2rem; border-radius: 50%; border: none; background: #343a40; color: white; font-weight: bold; }
 
-        /* Flying Score Animation Element */
         .flying-score {
             position: fixed;
             font-size: 5rem;
@@ -322,7 +318,7 @@
     let activeCell = null;
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
     let manualValue = "";
-    const players = ["爸", "媽", "誠", "娜"]; // Define names explicitly for logic
+    const players = ["爸", "媽", "誠", "娜"];
 
     function addRow() {
         const tbody = document.getElementById('scoreBody');
@@ -331,8 +327,8 @@
         
         let cells = `<td class="round-num">${roundNum}</td>`;
         for(let i=0; i<4; i++) {
-            // Pass the player index 'i' to openScoring
-            cells += `<td><div class="score-display p${i}-val" onclick="openScoring(this, ${i})">0</div></td>`;
+            // Initialized as empty string instead of "0"
+            cells += `<td><div class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></td>`;
         }
         
         row.innerHTML = cells;
@@ -341,17 +337,14 @@
 
     function openScoring(el, playerIndex) {
         activeCell = el;
-        // Update header with player name
         document.getElementById('playerNameDisplay').innerText = players[playerIndex];
         
         selectedCards = { nums: new Set(), mods: new Set(), x2: false };
         document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
         updateTally();
         
-        // Show overlay
         const overlay = document.getElementById('scoringOverlay');
         overlay.style.display = 'flex';
-        // Small delay to allow fade-in if we wanted CSS transition, but simple display toggle is snappy
         overlay.style.opacity = '1';
     }
 
@@ -403,52 +396,43 @@
         const sourceEl = document.getElementById('currentTally');
         const targetEl = activeCell;
 
-        // Get coordinates
         const sourceRect = sourceEl.getBoundingClientRect();
         const targetRect = targetEl.getBoundingClientRect();
 
-        // Create flying element
         const flyer = document.createElement('div');
         flyer.classList.add('flying-score');
         flyer.innerText = val;
         
-        // Initial position (on top of the source tally)
         flyer.style.top = `${sourceRect.top}px`;
         flyer.style.left = `${sourceRect.left}px`;
         flyer.style.width = `${sourceRect.width}px`;
         flyer.style.height = `${sourceRect.height}px`;
-        flyer.style.textAlign = 'right'; // Match tally alignment
+        flyer.style.textAlign = 'right';
         
         document.body.appendChild(flyer);
 
-        // Force reflow
-        flyer.getBoundingClientRect();
+        flyer.getBoundingClientRect(); // Force reflow
 
-        // 1. Fade out the overlay
         overlay.style.opacity = '0';
 
-        // 2. Move flyer to target
-        flyer.style.top = `${targetRect.top + (targetRect.height/2 - 20)}px`; // Center vertically roughly
+        flyer.style.top = `${targetRect.top + (targetRect.height/2 - 20)}px`;
         flyer.style.left = `${targetRect.left}px`;
         flyer.style.width = `${targetRect.width}px`;
-        flyer.style.textAlign = 'center'; // Target alignment
-        flyer.style.fontSize = '2.8rem'; // Match table font size
+        flyer.style.textAlign = 'center';
+        flyer.style.fontSize = '2.8rem'; 
         
-        // 3. Wait for animation to finish
         setTimeout(() => {
             finalizeScore(val);
             flyer.remove();
-            
-            // Fully close overlay
             overlay.style.display = 'none';
-            overlay.style.opacity = '1'; // Reset for next time
+            overlay.style.opacity = '1';
         }, 500);
     }
 
     function finalizeScore(val) {
         activeCell.innerText = val;
         activeCell.style.color = (val == 0) ? "#c0392b" : "#212529";
-        activeCell.style.transform = "scale(1.2)"; // Pulse effect
+        activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
         calculateTotals();
     }
@@ -484,7 +468,6 @@
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
-    // Init
     addRow();
     addRow();
 </script>
