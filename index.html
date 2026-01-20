@@ -150,7 +150,6 @@
             border-radius: 20px 20px 0 0;
         }
 
-        /* Pseudo-element for safe area background */
         footer::before {
             content: "";
             position: absolute;
@@ -205,7 +204,6 @@
         .calc-title { font-size: 1rem; font-weight: 700; color: #b2bec3; letter-spacing: 1px; }
         .player-name-display { font-size: 2.2rem; font-weight: 900; color: var(--text-color); }
         
-        /* Tally Box Layout */
         .tally-box { display: flex; flex-direction: row; align-items: center; gap: 25px; flex-wrap: nowrap; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
         .tally-label { font-size: 1.1rem; font-weight: bold; color: #636e72; white-space: nowrap; line-height: 1.4; }
@@ -229,8 +227,8 @@
         #manualModal { 
             background: #2d3436; 
             top: 50%; left: 50%; 
-            /* Wider width to fit large font */
-            width: 420px; 
+            /* Widened to 440px to fit large numbers */
+            width: 440px; 
             height: auto; 
             transform: translate(-50%, -50%); 
             padding: 40px; 
@@ -240,10 +238,10 @@
         
         #manualDisplay {
             color: white; 
-            /* LARGE FONT SIZE */
-            font-size: 7rem; 
+            /* INCREASED FONT SIZE */
+            font-size: 8rem; 
             text-align: center; 
-            margin-bottom: 25px; 
+            margin-bottom: 30px; 
             font-weight: 900;
             line-height: 1;
         }
@@ -368,7 +366,7 @@
 </div>
 
 <div id="manualModal">
-    <div id="manualDisplay" style="color:white; font-size:4rem; text-align:center; margin-bottom:25px; font-weight: 900;">0</div>
+    <div id="manualDisplay">0</div>
     <div class="numpad">
         <button class="num-btn" onclick="pressNum(1)">1</button>
         <button class="num-btn" onclick="pressNum(2)">2</button>
@@ -657,7 +655,7 @@
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
-    // Init
+    // Init with 1 row
     addRow();
 </script>
 </body>
