@@ -67,7 +67,6 @@
             background: #fdfdfd;
             display: inline-block;
             transition: color 0.2s, transform 0.2s;
-            /* Ensures the box has height even when empty */
             min-height: 3.4rem; 
             vertical-align: middle;
             line-height: 1.2;
@@ -217,7 +216,8 @@
             color: var(--primary-color);
             z-index: 9999;
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* CHANGED TO EASE-IN-OUT TO PREVENT OVERSHOOT */
+            transition: all 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -327,7 +327,6 @@
         
         let cells = `<td class="round-num">${roundNum}</td>`;
         for(let i=0; i<4; i++) {
-            // Initialized as empty string instead of "0"
             cells += `<td><div class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></td>`;
         }
         
