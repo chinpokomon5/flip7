@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flip 7 iPad Pro Scoreboard</title>
+    <title>Flip 7 iPad Scoreboard</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -21,7 +21,7 @@
             margin: 0;
             padding: 0;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* Prevent bouncing on iPad */
         }
 
         /* --- MAIN TABLE --- */
@@ -29,7 +29,9 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding-bottom: 250px;
+            padding-bottom: 180px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         table {
@@ -40,25 +42,25 @@
 
         th {
             background-color: #f8f9fa;
-            padding: 30px 5px;
-            font-size: 3rem;
-            border-bottom: 4px solid #eee;
+            padding: 20px 5px;
+            font-size: 2.5rem;
+            border-bottom: 3px solid #eee;
         }
 
         td {
-            padding: 20px 5px;
+            padding: 15px 5px;
             border-bottom: 1px solid #f0f0f0;
             text-align: center;
         }
 
-        .round-num { width: 70px; font-size: 1.5rem; color: #bbb; font-weight: bold; }
+        .round-num { width: 60px; font-size: 1.2rem; color: #bbb; font-weight: bold; }
 
         .score-display {
             width: 90%;
-            padding: 25px 0;
+            padding: 15px 0;
             border: 2px solid #ddd;
-            border-radius: 20px;
-            font-size: 3rem;
+            border-radius: 15px;
+            font-size: 2.5rem;
             font-weight: bold;
             background: #fafafa;
             display: inline-block;
@@ -78,76 +80,75 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 30px;
+            padding: 10px 20px;
             background: #f9f9f9;
             border-bottom: 1px solid #eee;
         }
 
-        .tally-box { text-align: right; }
-        .tally-label { font-size: 1.5rem; color: #666; font-weight: bold; }
-        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary-color); }
+        .calc-title { font-size: 1.8rem; font-weight: bold; color: #555; }
+        .tally-box { text-align: right; display: flex; align-items: center; gap: 15px; }
+        .tally-label { font-size: 1.2rem; color: #666; }
+        .tally-total { font-size: 3.5rem; font-weight: 900; color: var(--primary-color); }
 
         .overlay-body {
             flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 10px 15px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
+            justify-content: space-around; /* Spreads elements to fill height */
         }
 
-        /* Modifier Grid: 3 columns */
+        /* Modifier Grid: 3 columns, 2 rows */
         .grid-modifiers {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 10px;
         }
 
-        /* Number Grid: 4 columns for iPad Portrait */
+        /* Number Grid: 5 columns to save vertical space */
         .grid-numbers {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            padding-top: 20px;
-            border-top: 2px solid #eee;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
         }
 
-        /* Card Styling */
         .card {
-            aspect-ratio: 2/3;
-            border-radius: 15px;
+            aspect-ratio: 4/5;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .card.modifier { background: var(--card-bonus-bg); font-size: 1.8rem; }
+        .card.modifier { background: var(--card-bonus-bg); font-size: 1.5rem; }
         .card.multiplier { background: var(--card-mult-bg); }
         .card.num { background: var(--card-num-bg); }
         .card.selected { 
-            outline: 8px solid #2ecc71; 
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
-            transform: scale(0.96);
+            outline: 5px solid #2ecc71; 
+            transform: scale(0.95);
         }
 
         /* Action Bar */
         .action-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            padding: 25px;
+            gap: 10px;
+            padding: 15px;
             background: #e9ecef;
         }
 
         .action-btn {
-            padding: 25px 0;
+            padding: 15px 0;
             border: none;
-            border-radius: 15px;
-            font-size: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
             font-weight: bold;
             color: white;
         }
@@ -161,27 +162,24 @@
         footer {
             position: fixed; bottom: 0; width: 100%; max-width: 1000px;
             background: var(--footer-bg); display: grid;
-            grid-template-columns: 70px 1fr 1fr 1fr 1fr;
-            padding: 20px 0 40px 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-            text-align: center; border-top: 2px solid #ddd;
-            z-index: 100;
+            grid-template-columns: 60px 1fr 1fr 1fr 1fr;
+            padding: 10px 0 30px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            text-align: center; border-top: 1px solid #ddd;
         }
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 20px; margin: 0 8px; padding: 15px 0; }
-        .total-val { font-size: 4rem; font-weight: 900; line-height: 1; }
-        .total-label { font-size: 1.2rem; font-weight: bold; color: #555; margin-bottom: 5px; }
-        .is-leading { background-color: var(--win-color); transform: translateY(-20px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .crown { font-size: 2rem; height: 2rem; visibility: hidden; }
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 10px 0; }
+        .total-val { font-size: 3rem; font-weight: 900; line-height: 1; }
+        .total-label { font-size: 1rem; font-weight: bold; color: #555; }
+        .is-leading { background-color: var(--win-color); transform: translateY(-15px); }
+        .crown { font-size: 1.5rem; visibility: hidden; }
         .is-leading .crown { visibility: visible; }
 
-        /* Manual Modal */
         #manualModal {
             display: none; position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #212529; padding: 40px; border-radius: 30px; z-index: 2000;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            background: #212529; padding: 30px; border-radius: 20px; z-index: 2000;
         }
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .num-btn { width: 100px; height: 100px; font-size: 2.5rem; border-radius: 50%; border: none; background: #495057; color: white; }
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .num-btn { width: 80px; height: 80px; font-size: 2rem; border-radius: 50%; border: none; background: #495057; color: white; }
     </style>
 </head>
 <body>
@@ -196,13 +194,13 @@
         </thead>
         <tbody id="scoreBody"></tbody>
     </table>
-    <div style="text-align:center; padding: 50px;">
-        <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:25px 50px; border-radius:50px; font-size:2rem; font-weight:bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">+ NEXT ROUND</button>
+    <div style="text-align:center; padding: 30px;">
+        <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:20px 40px; border-radius:40px; font-size:1.5rem; font-weight:bold;">+ NEXT ROUND</button>
     </div>
 </div>
 
 <footer>
-    <div style="display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#aaa;">Σ</div>
+    <div style="display:flex; align-items:center; justify-content:center; font-size:2rem; color:#aaa;">Σ</div>
     <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-label">爸</span><span class="total-val" id="total-0">0</span></div>
     <div class="total-box" id="box-1"><span class="crown">👑</span><span class="total-label">媽</span><span class="total-val" id="total-1">0</span></div>
     <div class="total-box" id="box-2"><span class="crown">👑</span><span class="total-label">誠</span><span class="total-val" id="total-2">0</span></div>
@@ -211,7 +209,7 @@
 
 <div id="scoringOverlay">
     <div class="overlay-header">
-        <div class="tally-label" style="font-size: 2rem;">CALCULATOR</div>
+        <div class="calc-title">CALCULATOR</div>
         <div class="tally-box">
             <div class="tally-label" id="flipBonusLabel">Bonus: 0</div>
             <div class="tally-total" id="currentTally">0</div>
@@ -254,7 +252,7 @@
 </div>
 
 <div id="manualModal">
-    <div id="manualDisplay" style="color:white; font-size:4rem; text-align:center; margin-bottom:30px; font-weight: bold;">0</div>
+    <div id="manualDisplay" style="color:white; font-size:3rem; text-align:center; margin-bottom:20px; font-weight: bold;">0</div>
     <div class="numpad">
         <button class="num-btn" onclick="pressNum(1)">1</button>
         <button class="num-btn" onclick="pressNum(2)">2</button>
@@ -283,7 +281,6 @@
         row.innerHTML = `<td class="round-num">${roundNum}</td>` + 
             [0,1,2,3].map(i => `<td><div class="score-display p${i}-val" onclick="openScoring(this)">0</div></td>`).join('');
         tbody.appendChild(row);
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function openScoring(el) {
@@ -297,7 +294,6 @@
     function toggleCard(el, val) {
         el.classList.toggle('selected');
         const isSelected = el.classList.contains('selected');
-
         if (val === 'x2') {
             selectedCards.x2 = isSelected;
         } else if (el.classList.contains('num')) {
@@ -313,10 +309,8 @@
         selectedCards.nums.forEach(n => score += n);
         if (selectedCards.x2) score *= 2;
         selectedCards.mods.forEach(m => score += m);
-        
         let bonus = (selectedCards.nums.size === 7) ? 15 : 0;
         score += bonus;
-
         document.getElementById('currentTally').innerText = score;
         document.getElementById('flipBonusLabel').innerText = `Bonus: ${bonus > 0 ? '+15' : '0'}`;
     }
@@ -361,13 +355,10 @@
     function pressNum(v) {
         if (v === 'C') manualValue = "";
         else if (v === 'OK') { applyScore(manualValue || 0); return; }
-        else {
-            if (manualValue.length < 4) manualValue += v;
-        }
+        else if (manualValue.length < 4) manualValue += v;
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
-    // Init with two rounds
     addRow();
     addRow();
 </script>
