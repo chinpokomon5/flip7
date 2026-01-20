@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Flip 7 Pro</title>
     <style>
         :root {
@@ -16,7 +16,7 @@
             --btn-ok: #27ae60;
             --btn-bust: #c0392b;
             --text-color: #212529;
-            --grid-cols: 50px 1fr 1fr 1fr 1fr; /* Centralized column layout */
+            --grid-cols: 50px 1fr 1fr 1fr 1fr;
         }
 
         body {
@@ -25,8 +25,10 @@
             margin: 0;
             padding: 0;
             user-select: none;
-            overflow: hidden; /* Prevent full page bounce */
-            height: 100vh;
+            overflow: hidden; 
+            /* 100dvh handles iPad address bars better than 100vh */
+            height: 100vh; 
+            height: 100dvh; 
             display: flex;
             flex-direction: column;
             color: var(--text-color);
@@ -36,15 +38,16 @@
         .app-header {
             flex-shrink: 0;
             width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
             background-color: #f1f3f5;
-            border-bottom: 4px solid #dee2e6;
+            border-bottom: 2px solid #dee2e6;
             z-index: 50;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            /* Respect iPad Notch/Status Bar */
+            padding-top: env(safe-area-inset-top); 
         }
 
-        .header-row {
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: var(--grid-cols);
             text-align: center;
@@ -55,11 +58,12 @@
         .header-name {
             font-size: 2.5rem;
             font-weight: bold;
+            color: var(--primary-color);
         }
 
         /* --- SCROLLABLE CONTENT --- */
         .scroll-container {
-            flex: 1; /* Fills remaining height */
+            flex: 1; /* Takes up all remaining vertical space */
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
@@ -68,14 +72,14 @@
             padding-bottom: 180px; /* Space for footer */
         }
 
-        /* --- SCORE ROWS (GRID) --- */
+        /* --- SCORE ROWS --- */
         .round-row {
             display: grid;
             grid-template-columns: var(--grid-cols);
             align-items: center;
             text-align: center;
             border-bottom: 1px solid #e9ecef;
-            padding: 4px 0; /* Reduced padding for shorter rows */
+            padding: 4px 0;
         }
 
         .round-num {
@@ -95,10 +99,10 @@
             font-size: 2.8rem;
             font-weight: 800;
             background: #fdfdfd;
-            display: flex; /* Flex to center content */
+            display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 2.8rem; /* Slightly reduced height */
+            min-height: 2.8rem;
             color: var(--text-color);
             margin: 0 auto;
         }
@@ -115,6 +119,8 @@
             box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
             border-top: 1px solid #dee2e6;
             z-index: 100;
+            /* Respect iPad Home Bar */
+            padding-bottom: env(safe-area-inset-bottom);
         }
         
         .footer-content {
@@ -122,14 +128,14 @@
             max-width: 1000px;
             display: grid;
             grid-template-columns: var(--grid-cols);
-            padding: 10px 0 35px 0;
+            padding: 10px 0 20px 0;
             align-items: start;
         }
 
         .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
         
-        /* HUGE FONT FOR TOTALS */
-        .total-val { font-size: 6rem; font-weight: 900; line-height: 0.9; }
+        /* REVERTED FONT SIZE */
+        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; }
         .total-label { font-size: 1rem; font-weight: bold; color: #495057; margin-bottom: 5px; }
         
         .is-leading { background-color: var(--win-color); transform: translateY(-15px); padding-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
@@ -157,6 +163,7 @@
             border-bottom: 1px solid #dee2e6;
             flex-shrink: 0;
             height: 80px;
+            padding-top: max(10px, env(safe-area-inset-top)); /* Handle notch */
         }
 
         .header-left { display: flex; flex-direction: column; justify-content: center; }
@@ -232,6 +239,7 @@
             background: #e9ecef;
             flex-shrink: 0;
             border-top: 1px solid #dee2e6;
+            padding-bottom: max(30px, env(safe-area-inset-bottom));
         }
 
         .action-btn {
@@ -271,7 +279,7 @@
 <body>
 
 <header class="app-header">
-    <div class="header-row">
+    <div class="header-content">
         <div></div> <div class="header-name">爸</div>
         <div class="header-name">媽</div>
         <div class="header-name">誠</div>
@@ -379,14 +387,12 @@
         
         let html = `<div class="round-num">${activeRowId}</div>`;
         for(let i=0; i<4; i++) {
-            // Using ID to track unique cells for animation target
             html += `<div class="score-cell"><div id="r${activeRowId}-p${i}" class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></div>`;
         }
         
         row.innerHTML = html;
         roundsList.appendChild(row);
 
-        // Auto-scroll logic
         const btn = document.getElementById('addRoundBtnContainer');
         setTimeout(() => {
             btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
