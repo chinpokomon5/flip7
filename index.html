@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Flip 7 iPad Pro Visuals</title>
+    <title>Flip 7 Pro</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -62,10 +62,11 @@
             padding: 15px 0;
             border: 2px solid #ced4da;
             border-radius: 12px;
-            font-size: 2.5rem;
+            font-size: 2.8rem; /* Large font for table cells */
             font-weight: 800;
             background: #fdfdfd;
             display: inline-block;
+            transition: color 0.2s, transform 0.2s;
         }
 
         /* --- SCORING OVERLAY --- */
@@ -75,8 +76,8 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: white;
             z-index: 1000;
-            display: flex;
             flex-direction: column;
+            transition: opacity 0.3s;
         }
 
         .overlay-header {
@@ -87,14 +88,19 @@
             background: #f1f3f5;
             border-bottom: 1px solid #dee2e6;
             flex-shrink: 0;
-            height: 70px;
+            height: 80px;
         }
 
-        .calc-title { font-size: 1.5rem; font-weight: 800; color: #495057; }
+        .header-left { display: flex; flex-direction: column; justify-content: center; }
+        .calc-title { font-size: 1rem; font-weight: 700; color: #868e96; letter-spacing: 1px; text-transform: uppercase; }
+        .player-name-display { font-size: 2.2rem; font-weight: 900; color: #212529; }
+        
         .tally-box { display: flex; align-items: center; gap: 20px; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
-        .tally-label { font-size: 0.9rem; font-weight: bold; color: #666; }
-        .tally-total { font-size: 3rem; font-weight: 900; line-height: 1; color: var(--primary-color); }
+        .tally-label { font-size: 1rem; font-weight: bold; color: #666; }
+        
+        /* Tally Score Font Increased */
+        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary-color); min-width: 100px; text-align: right; }
 
         .overlay-body {
             flex: 1;
@@ -108,17 +114,17 @@
         .grid-modifiers {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
+            gap: 12px;
             flex-shrink: 0;
             height: 16%;
-            min-height: 80px;
+            min-height: 90px;
         }
 
         .grid-numbers {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(3, 1fr); 
-            gap: 10px;
+            gap: 12px;
             flex-grow: 1;
             padding-top: 5px;
         }
@@ -126,30 +132,36 @@
         .card {
             width: 100%;
             height: 100%;
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
             color: white;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            /* Add opacity to transition for smooth fading */
-            transition: transform 0.05s, opacity 0.2s ease-in-out;
-            /* Default state is semi-transparent */
-            opacity: 0.6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+            /* STATE TRANSITIONS */
+            transition: transform 0.1s, opacity 0.2s, filter 0.2s;
+            
+            /* DEFAULT STATE: Faded & Desaturated */
+            opacity: 0.4;
+            filter: grayscale(40%);
         }
 
-        /* Larger Fonts */
-        .card.modifier { background: var(--card-bonus-bg); font-size: 2rem; }
-        .card.multiplier { background: var(--card-mult-bg); font-size: 2rem; }
-        .card.num { background: var(--card-num-bg); font-size: 3rem; }
+        /* CARD FONTS - INCREASED */
+        .card.modifier { background: var(--card-bonus-bg); font-size: 2.5rem; }
+        .card.multiplier { background: var(--card-mult-bg); font-size: 2.5rem; }
+        .card.num { background: var(--card-num-bg); font-size: 4.5rem; }
         
-        /* Selected State: High Opacity + Thicker Border */
+        /* SELECTED STATE: Vibrant & Large */
         .card.selected { 
-            outline: 8px solid #2ecc71; /* Thicker border */
-            transform: scale(0.98);
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
-            opacity: 1; /* Full opacity when selected */
+            outline: 8px solid #2ecc71; 
+            outline-offset: -2px; /* Pulls outline inside slightly */
+            transform: scale(1.02); /* Pop out slightly */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            opacity: 1;
+            filter: grayscale(0%);
+            z-index: 10;
         }
 
         .action-bar {
@@ -163,10 +175,10 @@
         }
 
         .action-btn {
-            padding: 20px 0;
+            padding: 22px 0;
             border: none;
             border-radius: 12px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 800;
             color: white;
             box-shadow: 0 4px 0 rgba(0,0,0,0.1);
@@ -200,6 +212,17 @@
         }
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
         .num-btn { width: 80px; height: 80px; font-size: 2rem; border-radius: 50%; border: none; background: #343a40; color: white; font-weight: bold; }
+
+        /* Flying Score Animation Element */
+        .flying-score {
+            position: fixed;
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            z-index: 9999;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
     </style>
 </head>
 <body>
@@ -227,9 +250,12 @@
     <div class="total-box" id="box-3"><span class="crown">👑</span><span class="total-label">娜</span><span class="total-val" id="total-3">0</span></div>
 </footer>
 
-<div id="scoringOverlay" style="display:none;">
+<div id="scoringOverlay">
     <div class="overlay-header">
-        <div class="calc-title">SCORING</div>
+        <div class="header-left">
+            <div class="calc-title">SCORING FOR</div>
+            <div class="player-name-display" id="playerNameDisplay">PLAYER</div>
+        </div>
         <div class="tally-box">
             <div class="tally-info">
                 <div class="tally-label" id="cardCountLabel">Cards: 0/7</div>
@@ -267,10 +293,10 @@
     </div>
 
     <div class="action-bar">
-        <button class="action-btn btn-bust" onclick="applyScore(0)">BUST</button>
+        <button class="action-btn btn-bust" onclick="applyScore(0, false)">BUST</button>
         <button class="action-btn btn-manual" onclick="showManual()">MANUAL</button>
         <button class="action-btn btn-cancel" onclick="closeOverlay()">CANCEL</button>
-        <button class="action-btn btn-ok" onclick="applyCurrentTally()">OK</button>
+        <button class="action-btn btn-ok" onclick="applyCurrentTally(true)">OK</button>
     </div>
 </div>
 
@@ -296,22 +322,37 @@
     let activeCell = null;
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
     let manualValue = "";
+    const players = ["爸", "媽", "誠", "娜"]; // Define names explicitly for logic
 
     function addRow() {
         const tbody = document.getElementById('scoreBody');
         const roundNum = tbody.children.length + 1;
         const row = document.createElement('tr');
-        row.innerHTML = `<td class="round-num">${roundNum}</td>` + 
-            [0,1,2,3].map(i => `<td><div class="score-display p${i}-val" onclick="openScoring(this)">0</div></td>`).join('');
+        
+        let cells = `<td class="round-num">${roundNum}</td>`;
+        for(let i=0; i<4; i++) {
+            // Pass the player index 'i' to openScoring
+            cells += `<td><div class="score-display p${i}-val" onclick="openScoring(this, ${i})">0</div></td>`;
+        }
+        
+        row.innerHTML = cells;
         tbody.appendChild(row);
     }
 
-    function openScoring(el) {
+    function openScoring(el, playerIndex) {
         activeCell = el;
+        // Update header with player name
+        document.getElementById('playerNameDisplay').innerText = players[playerIndex];
+        
         selectedCards = { nums: new Set(), mods: new Set(), x2: false };
         document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
         updateTally();
-        document.getElementById('scoringOverlay').style.display = 'flex';
+        
+        // Show overlay
+        const overlay = document.getElementById('scoringOverlay');
+        overlay.style.display = 'flex';
+        // Small delay to allow fade-in if we wanted CSS transition, but simple display toggle is snappy
+        overlay.style.opacity = '1';
     }
 
     function toggleCard(el, val) {
@@ -341,17 +382,75 @@
         document.getElementById('cardCountLabel').style.color = (selectedCards.nums.size === 7) ? "#27ae60" : "#666";
     }
 
-    function applyCurrentTally() {
-        applyScore(document.getElementById('currentTally').innerText);
+    function applyCurrentTally(animate) {
+        const val = document.getElementById('currentTally').innerText;
+        applyScore(val, animate);
     }
 
-    function applyScore(val) {
-        if (activeCell) {
-            activeCell.innerText = val;
-            activeCell.style.color = (val == 0) ? "#c0392b" : "#212529";
-            calculateTotals();
+    function applyScore(val, animate) {
+        if (!activeCell) return;
+
+        if (animate) {
+            animateScoreTransfer(val);
+        } else {
+            finalizeScore(val);
+            closeOverlay();
         }
-        closeOverlay();
+    }
+
+    function animateScoreTransfer(val) {
+        const overlay = document.getElementById('scoringOverlay');
+        const sourceEl = document.getElementById('currentTally');
+        const targetEl = activeCell;
+
+        // Get coordinates
+        const sourceRect = sourceEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+
+        // Create flying element
+        const flyer = document.createElement('div');
+        flyer.classList.add('flying-score');
+        flyer.innerText = val;
+        
+        // Initial position (on top of the source tally)
+        flyer.style.top = `${sourceRect.top}px`;
+        flyer.style.left = `${sourceRect.left}px`;
+        flyer.style.width = `${sourceRect.width}px`;
+        flyer.style.height = `${sourceRect.height}px`;
+        flyer.style.textAlign = 'right'; // Match tally alignment
+        
+        document.body.appendChild(flyer);
+
+        // Force reflow
+        flyer.getBoundingClientRect();
+
+        // 1. Fade out the overlay
+        overlay.style.opacity = '0';
+
+        // 2. Move flyer to target
+        flyer.style.top = `${targetRect.top + (targetRect.height/2 - 20)}px`; // Center vertically roughly
+        flyer.style.left = `${targetRect.left}px`;
+        flyer.style.width = `${targetRect.width}px`;
+        flyer.style.textAlign = 'center'; // Target alignment
+        flyer.style.fontSize = '2.8rem'; // Match table font size
+        
+        // 3. Wait for animation to finish
+        setTimeout(() => {
+            finalizeScore(val);
+            flyer.remove();
+            
+            // Fully close overlay
+            overlay.style.display = 'none';
+            overlay.style.opacity = '1'; // Reset for next time
+        }, 500);
+    }
+
+    function finalizeScore(val) {
+        activeCell.innerText = val;
+        activeCell.style.color = (val == 0) ? "#c0392b" : "#212529";
+        activeCell.style.transform = "scale(1.2)"; // Pulse effect
+        setTimeout(() => activeCell.style.transform = "scale(1)", 200);
+        calculateTotals();
     }
 
     function closeOverlay() {
@@ -380,7 +479,7 @@
 
     function pressNum(v) {
         if (v === 'C') manualValue = "";
-        else if (v === 'OK') { applyScore(manualValue || 0); return; }
+        else if (v === 'OK') { applyScore(manualValue || 0, false); document.getElementById('manualModal').style.display = 'none'; return; }
         else if (manualValue.length < 4) manualValue += v;
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
