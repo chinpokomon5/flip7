@@ -140,14 +140,31 @@
         /* --- FOOTER --- */
         footer {
             position: fixed; 
-            bottom: 0; left: 0; width: 100%; 
-            background: var(--footer-bg); 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            /* background: var(--footer-bg); */ /* REMOVED */
             display: flex;
             justify-content: center;
             box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
+            border-top: none;
             z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom);
+            /* padding-bottom: env(safe-area-inset-bottom); */ /* REMOVED */
             border-radius: 20px 20px 0 0;
+        }
+
+        /* NEW: Pseudo-element for the background that extends into the safe area */
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* Extend bottom by the safe area amount to cover the gap */
+            bottom: calc(0px - env(safe-area-inset-bottom));
+            background: var(--footer-bg);
+            border-radius: 20px 20px 0 0;
+            z-index: -1; /* Place behind content */
         }
         
         .footer-content {
@@ -157,6 +174,9 @@
             grid-template-columns: var(--grid-cols);
             padding: 15px 0 25px 0;
             align-items: center;
+            /* NEW: Add padding here to push content up from the bottom */
+            padding-bottom: calc(25px + env(safe-area-inset-bottom));
+            position: relative; /* Ensure it sits above the pseudo-element background */
         }
 
         .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
@@ -189,7 +209,6 @@
         .calc-title { font-size: 1rem; font-weight: 700; color: #b2bec3; letter-spacing: 1px; }
         .player-name-display { font-size: 2.2rem; font-weight: 900; color: var(--text-color); }
         
-        /* Updated Tally Box Layout: Left alignment for Cards/Bonus */
         .tally-box { display: flex; flex-direction: row; align-items: center; gap: 25px; flex-wrap: nowrap; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
         .tally-label { font-size: 1.1rem; font-weight: bold; color: #636e72; white-space: nowrap; line-height: 1.4; }
