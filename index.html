@@ -16,6 +16,7 @@
             --btn-ok: #27ae60;
             --btn-bust: #c0392b;
             --text-color: #212529;
+            --grid-cols: 50px 1fr 1fr 1fr 1fr; /* Centralized column layout */
         }
 
         body {
@@ -24,68 +25,117 @@
             margin: 0;
             padding: 0;
             user-select: none;
-            overflow: hidden; /* Prevent body scroll, handle inside container */
+            overflow: hidden; /* Prevent full page bounce */
             height: 100vh;
             display: flex;
             flex-direction: column;
             color: var(--text-color);
         }
 
-        /* --- MAIN TABLE CONTAINER --- */
-        .container {
-            flex: 1;
+        /* --- FIXED HEADER --- */
+        .app-header {
+            flex-shrink: 0;
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            /* Scroll handling */
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 180px; 
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            table-layout: fixed;
-        }
-
-        th {
-            /* ANCHORED HEADER */
-            position: sticky;
-            top: 0;
-            z-index: 50;
             background-color: #f1f3f5;
-            padding: 15px 5px;
-            font-size: 2.5rem;
             border-bottom: 4px solid #dee2e6;
+            z-index: 50;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        td {
-            /* COMPACT ROW HEIGHT */
-            padding: 6px 5px; 
-            border-bottom: 1px solid #e9ecef;
+        .header-row {
+            display: grid;
+            grid-template-columns: var(--grid-cols);
             text-align: center;
+            align-items: center;
+            padding: 15px 0;
         }
 
-        .round-num { width: 50px; font-size: 1.2rem; color: #adb5bd; font-weight: bold; }
+        .header-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        /* --- SCROLLABLE CONTENT --- */
+        .scroll-container {
+            flex: 1; /* Fills remaining height */
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 180px; /* Space for footer */
+        }
+
+        /* --- SCORE ROWS (GRID) --- */
+        .round-row {
+            display: grid;
+            grid-template-columns: var(--grid-cols);
+            align-items: center;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            padding: 4px 0; /* Reduced padding for shorter rows */
+        }
+
+        .round-num {
+            font-size: 1.2rem;
+            color: #adb5bd;
+            font-weight: bold;
+        }
+
+        .score-cell {
+            padding: 0 5px;
+        }
 
         .score-display {
             width: 90%;
-            padding: 8px 0; 
             border: 2px solid #ced4da;
             border-radius: 10px;
             font-size: 2.8rem;
             font-weight: 800;
             background: #fdfdfd;
-            display: inline-block;
-            transition: color 0.2s, transform 0.2s;
-            min-height: 3.2rem;
-            vertical-align: middle;
-            line-height: 1.1;
+            display: flex; /* Flex to center content */
+            align-items: center;
+            justify-content: center;
+            min-height: 2.8rem; /* Slightly reduced height */
             color: var(--text-color);
+            margin: 0 auto;
         }
+
+        /* --- FOOTER --- */
+        footer {
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            background: var(--footer-bg); 
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #dee2e6;
+            z-index: 100;
+        }
+        
+        .footer-content {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: var(--grid-cols);
+            padding: 10px 0 35px 0;
+            align-items: start;
+        }
+
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
+        
+        /* HUGE FONT FOR TOTALS */
+        .total-val { font-size: 6rem; font-weight: 900; line-height: 0.9; }
+        .total-label { font-size: 1rem; font-weight: bold; color: #495057; margin-bottom: 5px; }
+        
+        .is-leading { background-color: var(--win-color); transform: translateY(-15px); padding-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: -5px; }
+        .is-leading .crown { visibility: visible; }
+        .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ced4da; height: 100%; padding-top: 10px;}
 
         /* --- SCORING OVERLAY --- */
         #scoringOverlay {
@@ -116,7 +166,6 @@
         .tally-box { display: flex; align-items: center; gap: 20px; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
         .tally-label { font-size: 1rem; font-weight: bold; color: #666; }
-        
         .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--primary-color); min-width: 100px; text-align: right; }
 
         .overlay-body {
@@ -200,39 +249,6 @@
         .btn-cancel { background: #adb5bd; color: #212529; }
         .btn-ok { background: var(--btn-ok); }
 
-        /* --- FOOTER --- */
-        footer {
-            position: fixed; 
-            bottom: 0; 
-            left: 0;
-            width: 100%; 
-            background: var(--footer-bg); 
-            display: flex;
-            justify-content: center;
-            padding: 0;
-            box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
-            border-top: 1px solid #dee2e6;
-            z-index: 100;
-        }
-        
-        .footer-content {
-            width: 100%;
-            max-width: 1000px;
-            display: grid;
-            grid-template-columns: 50px 1fr 1fr 1fr 1fr;
-            padding: 10px 0 35px 0;
-        }
-
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
-        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; }
-        .total-label { font-size: 1rem; font-weight: bold; color: #495057; margin-bottom: 5px; }
-        
-        .is-leading { background-color: var(--win-color); transform: translateY(-15px); padding-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: -5px; }
-        .is-leading .crown { visibility: visible; }
-        .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ced4da; }
-
-        /* Manual Modal */
         #manualModal {
             display: none; position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -254,16 +270,18 @@
 </head>
 <body>
 
-<div class="container" id="mainContainer">
-    <table id="scoreTable">
-        <thead>
-            <tr>
-                <th class="round-num"></th>
-                <th>爸</th><th>媽</th><th>誠</th><th>娜</th>
-            </tr>
-        </thead>
-        <tbody id="scoreBody"></tbody>
-    </table>
+<header class="app-header">
+    <div class="header-row">
+        <div></div> <div class="header-name">爸</div>
+        <div class="header-name">媽</div>
+        <div class="header-name">誠</div>
+        <div class="header-name">娜</div>
+    </div>
+</header>
+
+<div class="scroll-container" id="scrollContainer">
+    <div id="roundsList">
+        </div>
     
     <div id="addRoundBtnContainer" style="text-align:center; padding: 30px;">
         <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:18px 40px; border-radius:40px; font-size:1.5rem; font-weight:bold;">+ NEXT ROUND</button>
@@ -304,7 +322,6 @@
             <div class="card modifier" onclick="toggleCard(this, 10)">+10</div>
             <div class="card multiplier" onclick="toggleCard(this, 'x2')">x2</div>
         </div>
-
         <div class="grid-numbers">
             <div class="card num" onclick="toggleCard(this, 0)">0</div>
             <div class="card num" onclick="toggleCard(this, 1)">1</div>
@@ -321,7 +338,6 @@
             <div class="card num" onclick="toggleCard(this, 12)">12</div>
         </div>
     </div>
-
     <div class="action-bar">
         <button class="action-btn btn-bust" onclick="applyScore(0, false)">BUST</button>
         <button class="action-btn btn-manual" onclick="showManual()">MANUAL</button>
@@ -350,23 +366,27 @@
 
 <script>
     let activeCell = null;
+    let activeRowId = 0; 
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
     let manualValue = "";
     const players = ["爸", "媽", "誠", "娜"];
 
     function addRow() {
-        const tbody = document.getElementById('scoreBody');
-        const roundNum = tbody.children.length + 1;
-        const row = document.createElement('tr');
+        activeRowId++;
+        const roundsList = document.getElementById('roundsList');
+        const row = document.createElement('div');
+        row.className = 'round-row';
         
-        let cells = `<td class="round-num">${roundNum}</td>`;
+        let html = `<div class="round-num">${activeRowId}</div>`;
         for(let i=0; i<4; i++) {
-            cells += `<td><div class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></td>`;
+            // Using ID to track unique cells for animation target
+            html += `<div class="score-cell"><div id="r${activeRowId}-p${i}" class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></div>`;
         }
         
-        row.innerHTML = cells;
-        tbody.appendChild(row);
+        row.innerHTML = html;
+        roundsList.appendChild(row);
 
+        // Auto-scroll logic
         const btn = document.getElementById('addRoundBtnContainer');
         setTimeout(() => {
             btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -470,7 +490,6 @@
 
     function finalizeScore(val) {
         activeCell.innerText = val;
-        // COLOR UPDATE: Always use dark text color, even for 0
         activeCell.style.color = "#212529";
         activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
@@ -508,6 +527,7 @@
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
+    // Init
     addRow();
     addRow();
 </script>
