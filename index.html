@@ -6,22 +6,25 @@
     <title>Flip 7 iPad Scoreboard</title>
     <style>
         :root {
+            /* Flip 7 Official-style Colors */
             --primary-color: #2c3e50;
             --win-color: #ffd700;
             --bg-color: #ffffff;
-            --footer-bg: #f0f4f7;
-            --card-num-bg: #3498db;
-            --card-bonus-bg: #e67e22;
-            --card-mult-bg: #9b59b6;
+            --footer-bg: #f8f9fa;
+            --card-num-bg: #007dc3;    /* Official Blue */
+            --card-bonus-bg: #f37021;  /* Official Orange */
+            --card-mult-bg: #92278f;   /* Official Purple */
+            --btn-ok: #27ae60;
+            --btn-bust: #c0392b;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 0;
             user-select: none;
-            overflow: hidden; /* Prevent bouncing on iPad */
+            overflow: hidden;
         }
 
         /* --- MAIN TABLE --- */
@@ -29,7 +32,7 @@
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding-bottom: 180px;
+            padding-bottom: 200px;
             height: 100vh;
             overflow-y: auto;
         }
@@ -41,29 +44,30 @@
         }
 
         th {
-            background-color: #f8f9fa;
+            background-color: #f1f3f5;
             padding: 20px 5px;
-            font-size: 2.5rem;
-            border-bottom: 3px solid #eee;
+            font-size: 2.8rem;
+            border-bottom: 4px solid #dee2e6;
         }
 
         td {
             padding: 15px 5px;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid #e9ecef;
             text-align: center;
         }
 
-        .round-num { width: 60px; font-size: 1.2rem; color: #bbb; font-weight: bold; }
+        .round-num { width: 60px; font-size: 1.4rem; color: #adb5bd; font-weight: bold; }
 
         .score-display {
             width: 90%;
-            padding: 15px 0;
-            border: 2px solid #ddd;
+            padding: 18px 0;
+            border: 2px solid #ced4da;
             border-radius: 15px;
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: #fafafa;
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: #fdfdfd;
             display: inline-block;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
 
         /* --- SCORING OVERLAY --- */
@@ -80,106 +84,110 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background: #f9f9f9;
-            border-bottom: 1px solid #eee;
+            padding: 15px 25px;
+            background: #f1f3f5;
+            border-bottom: 2px solid #dee2e6;
         }
 
-        .calc-title { font-size: 1.8rem; font-weight: bold; color: #555; }
-        .tally-box { text-align: right; display: flex; align-items: center; gap: 15px; }
-        .tally-label { font-size: 1.2rem; color: #666; }
-        .tally-total { font-size: 3.5rem; font-weight: 900; color: var(--primary-color); }
+        .calc-title { font-size: 2rem; font-weight: 800; color: #495057; letter-spacing: 1px; }
+        .tally-box { text-align: right; display: flex; align-items: center; gap: 20px; }
+        .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
+        .tally-label { font-size: 1.1rem; font-weight: bold; color: #666; }
+        .tally-total { font-size: 4.5rem; font-weight: 900; line-height: 1; color: var(--primary-color); }
 
         .overlay-body {
             flex: 1;
-            padding: 10px 15px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            justify-content: space-around; /* Spreads elements to fill height */
+            gap: 15px;
+            justify-content: center;
         }
 
-        /* Modifier Grid: 3 columns, 2 rows */
         .grid-modifiers {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
-        /* Number Grid: 5 columns to save vertical space */
         .grid-numbers {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
+            gap: 12px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
         }
 
         .card {
             aspect-ratio: 4/5;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 900;
             color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
         }
 
-        .card.modifier { background: var(--card-bonus-bg); font-size: 1.5rem; }
+        .card.modifier { background: var(--card-bonus-bg); font-size: 1.8rem; }
         .card.multiplier { background: var(--card-mult-bg); }
         .card.num { background: var(--card-num-bg); }
+        
         .card.selected { 
-            outline: 5px solid #2ecc71; 
-            transform: scale(0.95);
+            outline: 6px solid #2ecc71; 
+            outline-offset: 2px;
+            transform: scale(0.94);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Action Bar */
         .action-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            padding: 15px;
+            gap: 15px;
+            padding: 20px;
             background: #e9ecef;
         }
 
         .action-btn {
-            padding: 15px 0;
+            padding: 20px 0;
             border: none;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: white;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
         }
 
-        .btn-bust { background: #e74c3c; }
-        .btn-manual { background: #6c757d; }
-        .btn-cancel { background: #ced4da; color: #333; }
-        .btn-ok { background: #2ecc71; }
+        .btn-bust { background: var(--btn-bust); }
+        .btn-manual { background: #495057; }
+        .btn-cancel { background: #adb5bd; color: #212529; }
+        .btn-ok { background: var(--btn-ok); }
 
         /* --- FOOTER --- */
         footer {
             position: fixed; bottom: 0; width: 100%; max-width: 1000px;
             background: var(--footer-bg); display: grid;
             grid-template-columns: 60px 1fr 1fr 1fr 1fr;
-            padding: 10px 0 30px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            text-align: center; border-top: 1px solid #ddd;
+            padding: 15px 0 35px 0; box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
+            text-align: center; border-top: 1px solid #dee2e6;
         }
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 10px 0; }
-        .total-val { font-size: 3rem; font-weight: 900; line-height: 1; }
-        .total-label { font-size: 1rem; font-weight: bold; color: #555; }
-        .is-leading { background-color: var(--win-color); transform: translateY(-15px); }
-        .crown { font-size: 1.5rem; visibility: hidden; }
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 18px; margin: 0 8px; padding: 12px 0; border: 2px solid transparent; }
+        .total-val { font-size: 3.8rem; font-weight: 900; line-height: 1; }
+        .total-label { font-size: 1.1rem; font-weight: bold; color: #495057; margin-bottom: 4px; }
+        .is-leading { background-color: var(--win-color); border-color: #e6be00; transform: translateY(-15px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .crown { font-size: 1.8rem; height: 1.8rem; visibility: hidden; }
         .is-leading .crown { visibility: visible; }
 
+        /* Manual Modal */
         #manualModal {
             display: none; position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #212529; padding: 30px; border-radius: 20px; z-index: 2000;
+            background: #212529; padding: 35px; border-radius: 25px; z-index: 2000;
         }
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .num-btn { width: 80px; height: 80px; font-size: 2rem; border-radius: 50%; border: none; background: #495057; color: white; }
+        .num-btn { width: 90px; height: 90px; font-size: 2.2rem; border-radius: 50%; border: none; background: #343a40; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -194,13 +202,13 @@
         </thead>
         <tbody id="scoreBody"></tbody>
     </table>
-    <div style="text-align:center; padding: 30px;">
-        <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:20px 40px; border-radius:40px; font-size:1.5rem; font-weight:bold;">+ NEXT ROUND</button>
+    <div style="text-align:center; padding: 40px;">
+        <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:22px 45px; border-radius:45px; font-size:1.8rem; font-weight:bold; box-shadow: 0 6px 12px rgba(0,0,0,0.15);">+ NEXT ROUND</button>
     </div>
 </div>
 
 <footer>
-    <div style="display:flex; align-items:center; justify-content:center; font-size:2rem; color:#aaa;">Σ</div>
+    <div style="display:flex; align-items:center; justify-content:center; font-size:2.5rem; color:#ced4da; font-weight: bold;">Σ</div>
     <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-label">爸</span><span class="total-val" id="total-0">0</span></div>
     <div class="total-box" id="box-1"><span class="crown">👑</span><span class="total-label">媽</span><span class="total-val" id="total-1">0</span></div>
     <div class="total-box" id="box-2"><span class="crown">👑</span><span class="total-label">誠</span><span class="total-val" id="total-2">0</span></div>
@@ -209,9 +217,12 @@
 
 <div id="scoringOverlay">
     <div class="overlay-header">
-        <div class="calc-title">CALCULATOR</div>
+        <div class="calc-title">SCORING</div>
         <div class="tally-box">
-            <div class="tally-label" id="flipBonusLabel">Bonus: 0</div>
+            <div class="tally-info">
+                <div class="tally-label" id="cardCountLabel">Cards: 0/7</div>
+                <div class="tally-label" id="flipBonusLabel">Bonus: 0</div>
+            </div>
             <div class="tally-total" id="currentTally">0</div>
         </div>
     </div>
@@ -252,7 +263,7 @@
 </div>
 
 <div id="manualModal">
-    <div id="manualDisplay" style="color:white; font-size:3rem; text-align:center; margin-bottom:20px; font-weight: bold;">0</div>
+    <div id="manualDisplay" style="color:white; font-size:4rem; text-align:center; margin-bottom:25px; font-weight: 900;">0</div>
     <div class="numpad">
         <button class="num-btn" onclick="pressNum(1)">1</button>
         <button class="num-btn" onclick="pressNum(2)">2</button>
@@ -263,9 +274,9 @@
         <button class="num-btn" onclick="pressNum(7)">7</button>
         <button class="num-btn" onclick="pressNum(8)">8</button>
         <button class="num-btn" onclick="pressNum(9)">9</button>
-        <button class="num-btn" onclick="pressNum('C')" style="background:#e74c3c">C</button>
+        <button class="num-btn" onclick="pressNum('C')" style="background:var(--btn-bust)">C</button>
         <button class="num-btn" onclick="pressNum(0)">0</button>
-        <button class="num-btn" onclick="pressNum('OK')" style="background:#2ecc71">OK</button>
+        <button class="num-btn" onclick="pressNum('OK')" style="background:var(--btn-ok)">OK</button>
     </div>
 </div>
 
@@ -281,6 +292,7 @@
         row.innerHTML = `<td class="round-num">${roundNum}</td>` + 
             [0,1,2,3].map(i => `<td><div class="score-display p${i}-val" onclick="openScoring(this)">0</div></td>`).join('');
         tbody.appendChild(row);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function openScoring(el) {
@@ -311,8 +323,13 @@
         selectedCards.mods.forEach(m => score += m);
         let bonus = (selectedCards.nums.size === 7) ? 15 : 0;
         score += bonus;
+
         document.getElementById('currentTally').innerText = score;
         document.getElementById('flipBonusLabel').innerText = `Bonus: ${bonus > 0 ? '+15' : '0'}`;
+        document.getElementById('cardCountLabel').innerText = `Cards: ${selectedCards.nums.size}/7`;
+        
+        // Visual feedback for Flip 7
+        document.getElementById('cardCountLabel').style.color = (selectedCards.nums.size === 7) ? "#27ae60" : "#666";
     }
 
     function applyCurrentTally() {
@@ -322,7 +339,7 @@
     function applyScore(val) {
         if (activeCell) {
             activeCell.innerText = val;
-            activeCell.style.color = (val == 0) ? "#e74c3c" : "black";
+            activeCell.style.color = (val == 0) ? "#c0392b" : "#212529";
             calculateTotals();
         }
         closeOverlay();
@@ -359,6 +376,7 @@
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
+    // Start with 2 rounds
     addRow();
     addRow();
 </script>
