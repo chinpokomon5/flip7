@@ -15,6 +15,7 @@
             --card-mult-bg: #92278f;
             --btn-ok: #27ae60;
             --btn-bust: #c0392b;
+            --text-color: #212529;
         }
 
         body {
@@ -23,34 +24,47 @@
             margin: 0;
             padding: 0;
             user-select: none;
-            overflow: hidden;
+            overflow: hidden; /* Prevent body scroll, handle inside container */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-color);
         }
 
-        /* --- MAIN TABLE --- */
+        /* --- MAIN TABLE CONTAINER --- */
         .container {
+            flex: 1;
             width: 100%;
             max-width: 1000px;
             margin: 0 auto;
-            padding-bottom: 200px;
-            height: 100vh;
+            /* Scroll handling */
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 180px; 
         }
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             table-layout: fixed;
         }
 
         th {
+            /* ANCHORED HEADER */
+            position: sticky;
+            top: 0;
+            z-index: 50;
             background-color: #f1f3f5;
-            padding: 20px 5px;
+            padding: 15px 5px;
             font-size: 2.5rem;
             border-bottom: 4px solid #dee2e6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         td {
-            padding: 10px 5px;
+            /* COMPACT ROW HEIGHT */
+            padding: 6px 5px; 
             border-bottom: 1px solid #e9ecef;
             text-align: center;
         }
@@ -59,17 +73,18 @@
 
         .score-display {
             width: 90%;
-            padding: 15px 0;
+            padding: 8px 0; 
             border: 2px solid #ced4da;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 2.8rem;
             font-weight: 800;
             background: #fdfdfd;
             display: inline-block;
             transition: color 0.2s, transform 0.2s;
-            min-height: 3.4rem; 
+            min-height: 3.2rem;
             vertical-align: middle;
-            line-height: 1.2;
+            line-height: 1.1;
+            color: var(--text-color);
         }
 
         /* --- SCORING OVERLAY --- */
@@ -187,18 +202,35 @@
 
         /* --- FOOTER --- */
         footer {
-            position: fixed; bottom: 0; width: 100%; max-width: 1000px;
-            background: var(--footer-bg); display: grid;
-            grid-template-columns: 50px 1fr 1fr 1fr 1fr;
-            padding: 10px 0 30px 0; box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
-            text-align: center; border-top: 1px solid #dee2e6;
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            background: var(--footer-bg); 
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #dee2e6;
+            z-index: 100;
         }
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 10px 0; }
-        .total-val { font-size: 3rem; font-weight: 900; line-height: 1; }
-        .total-label { font-size: 1rem; font-weight: bold; color: #495057; }
-        .is-leading { background-color: var(--win-color); transform: translateY(-10px); }
-        .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; }
+        
+        .footer-content {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+            padding: 10px 0 35px 0;
+        }
+
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
+        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; }
+        .total-label { font-size: 1rem; font-weight: bold; color: #495057; margin-bottom: 5px; }
+        
+        .is-leading { background-color: var(--win-color); transform: translateY(-15px); padding-bottom: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: -5px; }
         .is-leading .crown { visibility: visible; }
+        .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ced4da; }
 
         /* Manual Modal */
         #manualModal {
@@ -216,14 +248,13 @@
             color: var(--primary-color);
             z-index: 9999;
             pointer-events: none;
-            /* CHANGED TO EASE-IN-OUT TO PREVENT OVERSHOOT */
             transition: all 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainContainer">
     <table id="scoreTable">
         <thead>
             <tr>
@@ -233,17 +264,20 @@
         </thead>
         <tbody id="scoreBody"></tbody>
     </table>
-    <div style="text-align:center; padding: 30px;">
+    
+    <div id="addRoundBtnContainer" style="text-align:center; padding: 30px;">
         <button onclick="addRow()" style="background:var(--primary-color); color:white; border:none; padding:18px 40px; border-radius:40px; font-size:1.5rem; font-weight:bold;">+ NEXT ROUND</button>
     </div>
 </div>
 
 <footer>
-    <div style="display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ced4da;">Σ</div>
-    <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-label">爸</span><span class="total-val" id="total-0">0</span></div>
-    <div class="total-box" id="box-1"><span class="crown">👑</span><span class="total-label">媽</span><span class="total-val" id="total-1">0</span></div>
-    <div class="total-box" id="box-2"><span class="crown">👑</span><span class="total-label">誠</span><span class="total-val" id="total-2">0</span></div>
-    <div class="total-box" id="box-3"><span class="crown">👑</span><span class="total-label">娜</span><span class="total-val" id="total-3">0</span></div>
+    <div class="footer-content">
+        <div class="sigma-icon">Σ</div>
+        <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-label">爸</span><span class="total-val" id="total-0">0</span></div>
+        <div class="total-box" id="box-1"><span class="crown">👑</span><span class="total-label">媽</span><span class="total-val" id="total-1">0</span></div>
+        <div class="total-box" id="box-2"><span class="crown">👑</span><span class="total-label">誠</span><span class="total-val" id="total-2">0</span></div>
+        <div class="total-box" id="box-3"><span class="crown">👑</span><span class="total-label">娜</span><span class="total-val" id="total-3">0</span></div>
+    </div>
 </footer>
 
 <div id="scoringOverlay">
@@ -332,6 +366,11 @@
         
         row.innerHTML = cells;
         tbody.appendChild(row);
+
+        const btn = document.getElementById('addRoundBtnContainer');
+        setTimeout(() => {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
 
     function openScoring(el, playerIndex) {
@@ -344,6 +383,7 @@
         
         const overlay = document.getElementById('scoringOverlay');
         overlay.style.display = 'flex';
+        void overlay.offsetWidth;
         overlay.style.opacity = '1';
     }
 
@@ -410,7 +450,7 @@
         
         document.body.appendChild(flyer);
 
-        flyer.getBoundingClientRect(); // Force reflow
+        flyer.getBoundingClientRect();
 
         overlay.style.opacity = '0';
 
@@ -430,7 +470,8 @@
 
     function finalizeScore(val) {
         activeCell.innerText = val;
-        activeCell.style.color = (val == 0) ? "#c0392b" : "#212529";
+        // COLOR UPDATE: Always use dark text color, even for 0
+        activeCell.style.color = "#212529";
         activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
         calculateTotals();
