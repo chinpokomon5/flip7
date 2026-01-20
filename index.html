@@ -16,12 +16,15 @@
             --header-gradient: linear-gradient(135deg, #ff9966, #ff5e62);
             --card-bg: #ffffff;
             
-            --footer-bg: #2d3436; /* Dark footer */
+            --footer-bg: #2d3436; 
             --footer-text: #dfe6e9;
             
             --accent-color: #ff6b6b;
             --btn-add-bg: #2ecc71;
             --btn-reset-bg: #ff7675;
+            
+            /* Text Colors */
+            --text-color: #2d3436; /* Unified Dark Grey for Scores */
             
             /* Game Card Colors */
             --card-num-bg: #0984e3;
@@ -42,7 +45,7 @@
             height: 100dvh; 
             display: flex;
             flex-direction: column;
-            color: #2d3436;
+            color: var(--text-color);
         }
 
         /* --- FIXED HEADER --- */
@@ -82,7 +85,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 180px; 
-            padding-top: 15px; /* Spacing for first card */
+            padding-top: 15px; 
         }
 
         /* --- MODERN SCORE ROWS (CARDS) --- */
@@ -91,10 +94,8 @@
             grid-template-columns: var(--grid-cols);
             align-items: center;
             text-align: center;
-            
-            /* Card Styling */
             background: var(--card-bg);
-            margin: 0 15px 12px 15px; /* Side margins and bottom gap */
+            margin: 0 15px 12px 15px;
             padding: 10px 0;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -113,7 +114,7 @@
 
         .score-display {
             width: 90%;
-            border: 2px solid #dfe6e9; /* Lighter border */
+            border: 2px solid #dfe6e9;
             border-radius: 12px;
             font-size: 2.8rem;
             font-weight: 800;
@@ -122,7 +123,7 @@
             align-items: center;
             justify-content: center;
             height: 3.6rem; 
-            color: #2d3436;
+            color: var(--text-color);
             margin: 0 auto;
         }
 
@@ -153,7 +154,7 @@
         .btn-add { background-color: var(--btn-add-bg); flex-grow: 2; justify-content: center; }
         .btn-reset { background-color: var(--btn-reset-bg); flex-grow: 1; justify-content: center; opacity: 0.9; }
 
-        /* --- FOOTER (DARK THEME) --- */
+        /* --- FOOTER --- */
         footer {
             position: fixed; 
             bottom: 0; 
@@ -166,7 +167,7 @@
             border-top: none;
             z-index: 100;
             padding-bottom: env(safe-area-inset-bottom);
-            border-radius: 20px 20px 0 0; /* Rounded top corners */
+            border-radius: 20px 20px 0 0;
         }
         
         .footer-content {
@@ -183,7 +184,7 @@
         .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; color: white; }
         
         .is-leading { background-color: #fdcb6e; box-shadow: 0 0 20px rgba(253, 203, 110, 0.4); }
-        .is-leading .total-val { color: #2d3436; } /* Dark text on gold */
+        .is-leading .total-val { color: var(--text-color); }
         
         .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: 0px; }
         .is-leading .crown { visibility: visible; }
@@ -206,7 +207,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 25px;
-            background: var(--bg-color); /* Matches body */
+            background: var(--bg-color);
             border-bottom: 1px solid #dfe6e9;
             flex-shrink: 0;
             height: 80px;
@@ -215,12 +216,14 @@
 
         .header-left { display: flex; flex-direction: column; justify-content: center; }
         .calc-title { font-size: 1rem; font-weight: 700; color: #b2bec3; letter-spacing: 1px; text-transform: uppercase; }
-        .player-name-display { font-size: 2.2rem; font-weight: 900; color: #2d3436; }
+        .player-name-display { font-size: 2.2rem; font-weight: 900; color: var(--text-color); }
         
         .tally-box { display: flex; align-items: center; gap: 20px; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; }
         .tally-label { font-size: 1rem; font-weight: bold; color: #636e72; }
-        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--card-num-bg); min-width: 100px; text-align: right; }
+        
+        /* UNIFIED COLOR: Using --text-color instead of blue */
+        .tally-total { font-size: 5rem; font-weight: 900; line-height: 1; color: var(--text-color); min-width: 100px; text-align: right; }
 
         .overlay-body {
             flex: 1;
@@ -252,7 +255,7 @@
         .card {
             width: 100%;
             height: 100%;
-            border-radius: 16px; /* Rounder cards */
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -345,15 +348,17 @@
             text-transform: uppercase;
         }
 
+        /* UNIFIED COLOR: Using --text-color instead of blue */
         .flying-score {
             position: fixed;
             font-size: 5rem;
             font-weight: 900;
-            color: var(--card-num-bg);
+            color: var(--text-color); 
             z-index: 9999;
             pointer-events: none;
             transition: all 0.5s ease-in-out;
-            text-shadow: 2px 2px 0px white; /* Outline for visibility */
+            /* White shadow helps visibility over any background */
+            text-shadow: 0px 0px 4px rgba(255,255,255,0.8);
         }
     </style>
 </head>
@@ -484,14 +489,11 @@
 
     function resetGame() {
         if(confirm("Start a new game? This will clear all scores.")) {
-            // Clear rows
             document.getElementById('roundsList').innerHTML = '';
             activeRowId = 0;
-            // Reset totals to 0 in UI
             for(let i=0; i<4; i++) {
                 document.getElementById(`total-${i}`).innerText = '0';
             }
-            // Add first row
             addRow();
             calculateTotals();
         }
@@ -602,7 +604,7 @@
 
     function finalizeScore(val) {
         activeCell.innerText = val;
-        activeCell.style.color = "#2d3436";
+        activeCell.style.color = "var(--text-color)";
         activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
         calculateTotals();
@@ -647,7 +649,6 @@
 
     // Init
     addRow();
-    // Add a second row by default
     addRow();
 </script>
 </body>
