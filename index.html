@@ -140,31 +140,25 @@
         /* --- FOOTER --- */
         footer {
             position: fixed; 
-            bottom: 0; 
-            left: 0;
-            width: 100%; 
-            /* background: var(--footer-bg); */ /* REMOVED */
+            bottom: 0; left: 0; width: 100%; 
+            background: var(--footer-bg); 
             display: flex;
             justify-content: center;
             box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
-            border-top: none;
             z-index: 100;
-            /* padding-bottom: env(safe-area-inset-bottom); */ /* REMOVED */
+            padding-bottom: env(safe-area-inset-bottom);
             border-radius: 20px 20px 0 0;
         }
 
-        /* NEW: Pseudo-element for the background that extends into the safe area */
+        /* Pseudo-element for safe area background */
         footer::before {
             content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            /* Extend bottom by the safe area amount to cover the gap */
+            top: 0; left: 0; right: 0;
             bottom: calc(0px - env(safe-area-inset-bottom));
             background: var(--footer-bg);
             border-radius: 20px 20px 0 0;
-            z-index: -1; /* Place behind content */
+            z-index: -1;
         }
         
         .footer-content {
@@ -174,9 +168,8 @@
             grid-template-columns: var(--grid-cols);
             padding: 15px 0 25px 0;
             align-items: center;
-            /* NEW: Add padding here to push content up from the bottom */
             padding-bottom: calc(25px + env(safe-area-inset-bottom));
-            position: relative; /* Ensure it sits above the pseudo-element background */
+            position: relative;
         }
 
         .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
@@ -203,12 +196,16 @@
         .overlay-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 25px; background: var(--bg-color); border-bottom: 1px solid #dfe6e9;
-            flex-shrink: 0; height: 80px; padding-top: max(10px, env(safe-area-inset-top)); 
+            flex-shrink: 0; height: auto; min-height: 90px;
+            padding-top: max(25px, env(safe-area-inset-top)); 
+            padding-bottom: 15px;
         }
+        
         .header-left { display: flex; flex-direction: column; justify-content: center; }
         .calc-title { font-size: 1rem; font-weight: 700; color: #b2bec3; letter-spacing: 1px; }
         .player-name-display { font-size: 2.2rem; font-weight: 900; color: var(--text-color); }
         
+        /* Tally Box Layout */
         .tally-box { display: flex; flex-direction: row; align-items: center; gap: 25px; flex-wrap: nowrap; }
         .tally-info { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
         .tally-label { font-size: 1.1rem; font-weight: bold; color: #636e72; white-space: nowrap; line-height: 1.4; }
@@ -228,8 +225,29 @@
         .action-btn { padding: 22px 0; border: none; border-radius: 16px; font-size: 1.4rem; font-weight: 800; color: white; }
         .btn-bust { background: #d63031; } .btn-manual { background: #636e72; } .btn-cancel { background: #b2bec3; color: #2d3436; } .btn-ok { background: #00b894; }
 
-        /* MANUAL MODAL */
-        #manualModal { background: #2d3436; top: 50%; left: 50%; width: 340px; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        /* UPDATED MANUAL MODAL */
+        #manualModal { 
+            background: #2d3436; 
+            top: 50%; left: 50%; 
+            /* Wider width to fit large font */
+            width: 420px; 
+            height: auto; 
+            transform: translate(-50%, -50%); 
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        }
+        
+        #manualDisplay {
+            color: white; 
+            /* LARGE FONT SIZE */
+            font-size: 7rem; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-weight: 900;
+            line-height: 1;
+        }
+
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px; }
         .num-btn { width: 100%; aspect-ratio: 1; font-size: 2.5rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: bold; }
         .manual-cancel-btn { width: 100%; padding: 18px; background: #636e72; color: #dfe6e9; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; }
@@ -639,7 +657,7 @@
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
 
-    // Init with 1 row
+    // Init
     addRow();
 </script>
 </body>
