@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Flip 7 Pro</title>
     
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' style='background:%230984e3'%3E%3Cg transform='translate(256 256)'%3E%3Ctext x='0' y='20' font-family='sans-serif' font-weight='bold' font-size='300' text-anchor='middle' fill='white'%3E7%3C/text%3E%3C/g%3E%3C/svg%3E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -141,12 +140,10 @@
         footer {
             position: fixed; 
             bottom: 0; left: 0; width: 100%; 
-            background: var(--footer-bg); 
             display: flex;
             justify-content: center;
             box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
             z-index: 100;
-            padding-bottom: env(safe-area-inset-bottom);
             border-radius: 20px 20px 0 0;
         }
 
@@ -223,7 +220,7 @@
         .action-btn { padding: 22px 0; border: none; border-radius: 16px; font-size: 1.4rem; font-weight: 800; color: white; }
         .btn-bust { background: #d63031; } .btn-manual { background: #636e72; } .btn-cancel { background: #b2bec3; color: #2d3436; } .btn-ok { background: #00b894; }
 
-        /* UPDATED MANUAL MODAL */
+        /* UPDATED MANUAL MODAL - Compact Buttons */
         #manualModal { 
             background: #2d3436; 
             top: 50%; left: 50%; 
@@ -244,13 +241,12 @@
             line-height: 1;
         }
 
-        /* NEW: Constrain the width of the numpad grid to shrink buttons */
         .numpad { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; /* Reduced gap slightly */
+            gap: 10px; /* Reduced Gap */
             margin-bottom: 25px;
-            max-width: 320px; /* Forces buttons to be smaller */
+            max-width: 260px; /* Constrained width to make buttons smaller */
             margin-left: auto;
             margin-right: auto;
         }
@@ -430,6 +426,33 @@
 </div>
 
 <script>
+    // --- ICON GENERATOR FOR iOS ---
+    // Generates a Blue (#0984e3) PNG icon with a "7" to prevent the default black icon
+    (function generateAppIcon() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 180;
+        canvas.height = 180;
+        const ctx = canvas.getContext('2d');
+        
+        // Background
+        ctx.fillStyle = "#0984e3";
+        ctx.fillRect(0, 0, 180, 180);
+        
+        // Text
+        ctx.fillStyle = "white";
+        ctx.font = "bold 100px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("7", 90, 95);
+        
+        const dataURL = canvas.toDataURL('image/png');
+        
+        let link = document.createElement('link');
+        link.rel = 'apple-touch-icon';
+        link.href = dataURL;
+        document.head.appendChild(link);
+    })();
+
     let activeCell = null;
     let activeRowId = 0; 
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
