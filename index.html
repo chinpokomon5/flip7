@@ -142,20 +142,18 @@
             bottom: 0; left: 0; width: 100%; 
             display: flex;
             justify-content: center;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
             z-index: 100;
-            /* Container styling moved to ::before to handle safe area bleed */
+            border-radius: 20px 20px 0 0;
         }
 
-        /* Footer Background Layer */
         footer::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0;
-            /* FORCE BLEED: Extends 100px below the viewport to cover the safe area gap */
-            bottom: -100px; 
+            bottom: calc(0px - env(safe-area-inset-bottom));
             background: var(--footer-bg);
             border-radius: 20px 20px 0 0;
-            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
             z-index: -1;
         }
         
@@ -166,7 +164,6 @@
             grid-template-columns: var(--grid-cols);
             padding: 15px 0 25px 0;
             align-items: center;
-            /* Content padding still respects safe area to push numbers up */
             padding-bottom: calc(25px + env(safe-area-inset-bottom));
             position: relative;
         }
@@ -429,18 +426,16 @@
 </div>
 
 <script>
-    // --- ICON GENERATOR FOR iOS ---
+    // --- APP ICON GENERATION ---
     (function generateAppIcon() {
         const canvas = document.createElement('canvas');
         canvas.width = 180;
         canvas.height = 180;
         const ctx = canvas.getContext('2d');
         
-        // Background - Blue #0984e3
-        ctx.fillStyle = "#0984e3";
+        ctx.fillStyle = "#0984e3"; // BLUE
         ctx.fillRect(0, 0, 180, 180);
         
-        // Text
         ctx.fillStyle = "white";
         ctx.font = "bold 100px sans-serif";
         ctx.textAlign = "center";
@@ -455,13 +450,138 @@
         document.head.appendChild(link);
     })();
 
+    // --- AUDIO SYSTEM ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playClick() {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function playPop() {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    function playScoreSound() {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function playVictorySound() {
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        [440, 554, 659, 880].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.2, now + i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + i*0.1 + 0.5);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + i*0.1);
+            osc.stop(now + i*0.1 + 0.5);
+        });
+    }
+
+    // --- GAME LOGIC ---
     let activeCell = null;
     let activeRowId = 0; 
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
     let manualValue = "";
     const players = ["爸", "媽", "誠", "娜"];
 
-    function addRow() {
+    // Initialize
+    window.addEventListener('load', () => {
+        loadGame();
+    });
+
+    // Save/Load Logic
+    function saveGame() {
+        const rows = document.querySelectorAll('.round-row');
+        const state = {
+            activeRowId: activeRowId,
+            rounds: []
+        };
+
+        rows.forEach(row => {
+            const roundId = row.querySelector('.round-num').innerText;
+            const scores = [];
+            for(let i=0; i<4; i++) {
+                const cellId = `r${roundId}-p${i}`;
+                const cell = document.getElementById(cellId);
+                scores.push(cell ? cell.innerText : "");
+            }
+            state.rounds.push({ id: roundId, scores: scores });
+        });
+
+        localStorage.setItem('flip7_save', JSON.stringify(state));
+    }
+
+    function loadGame() {
+        const saved = localStorage.getItem('flip7_save');
+        if (saved) {
+            const state = JSON.parse(saved);
+            document.getElementById('roundsList').innerHTML = '';
+            activeRowId = 0;
+            
+            if (state.rounds && state.rounds.length > 0) {
+                state.rounds.forEach(roundData => {
+                    // Recreate row
+                    activeRowId = parseInt(roundData.id) - 1; // Logic adjusts in addRow
+                    addRow(false); // Don't scroll on load
+                    
+                    // Fill data
+                    roundData.scores.forEach((score, i) => {
+                        if(score !== "") {
+                            const cell = document.getElementById(`r${roundData.id}-p${i}`);
+                            if(cell) {
+                                cell.innerText = score;
+                                cell.style.color = "var(--text-color)";
+                            }
+                        }
+                    });
+                });
+                calculateTotals();
+            } else {
+                addRow(); // Start new
+            }
+        } else {
+            addRow(); // Start new
+        }
+    }
+
+    function addRow(shouldScroll = true) {
         activeRowId++;
         const roundsList = document.getElementById('roundsList');
         const row = document.createElement('div');
@@ -475,14 +595,20 @@
         row.innerHTML = html;
         roundsList.appendChild(row);
 
-        const controls = document.getElementById('controlsContainer');
-        setTimeout(() => {
-            controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
+        if (shouldScroll) {
+            playClick(); // Sound
+            saveGame(); // Save new state
+            const controls = document.getElementById('controlsContainer');
+            setTimeout(() => {
+                controls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
     }
 
     function resetGame(confirmReq) {
         if(!confirmReq || confirm("Start a new game? This will clear all scores.")) {
+            playClick();
+            localStorage.removeItem('flip7_save');
             document.getElementById('roundsList').innerHTML = '';
             activeRowId = 0;
             for(let i=0; i<4; i++) {
@@ -495,6 +621,7 @@
     }
 
     function openScoring(el, playerIndex) {
+        playClick();
         activeCell = el;
         document.getElementById('playerNameDisplay').innerText = players[playerIndex];
         selectedCards = { nums: new Set(), mods: new Set(), x2: false };
@@ -508,6 +635,7 @@
     }
 
     function toggleCard(el, val) {
+        playPop(); // Sound
         el.classList.toggle('selected');
         const isSelected = el.classList.contains('selected');
         if (val === 'x2') {
@@ -535,11 +663,13 @@
     }
 
     function applyCurrentTally(animate) {
+        playClick();
         const val = document.getElementById('currentTally').innerText;
         applyScore(val, animate, 'currentTally');
     }
 
     function triggerBust() {
+        playClick();
         const tallyEl = document.getElementById('currentTally');
         tallyEl.innerText = "0";
         applyScore(0, true, 'currentTally');
@@ -599,17 +729,18 @@
     }
 
     function finalizeScore(val) {
+        playScoreSound(); // Sound
         activeCell.innerText = val;
         activeCell.style.color = "var(--text-color)";
         activeCell.style.transform = "scale(1.2)";
         setTimeout(() => activeCell.style.transform = "scale(1)", 200);
         calculateTotals();
-        
-        // CHECK WIN CONDITION
+        saveGame(); // Save after scoring
         checkWinCondition();
     }
 
     function closeOverlay() {
+        playClick();
         document.getElementById('scoringOverlay').style.display = 'none';
     }
 
@@ -649,6 +780,7 @@
         }
 
         if(winners.length === 1) {
+            playVictorySound();
             showVictory(winners[0], totals);
         }
     }
@@ -670,6 +802,7 @@
     }
 
     function closeVictory() {
+        playClick();
         document.getElementById('victoryOverlay').style.display = 'none';
     }
 
@@ -678,16 +811,19 @@
     }
 
     function showManual() {
+        playClick();
         manualValue = "";
         document.getElementById('manualDisplay').innerText = "0";
         document.getElementById('manualModal').style.display = 'block';
     }
 
     function closeManual() {
+        playClick();
         document.getElementById('manualModal').style.display = 'none';
     }
 
     function pressNum(v) {
+        playClick();
         if (v === 'C') manualValue = "";
         else if (v === 'OK') { 
             applyScore(manualValue || 0, true, 'manualDisplay'); 
@@ -696,9 +832,6 @@
         else if (manualValue.length < 4) manualValue += v;
         document.getElementById('manualDisplay').innerText = manualValue || "0";
     }
-
-    // Init with 1 row
-    addRow();
 </script>
 </body>
 </html>
