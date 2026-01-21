@@ -142,18 +142,20 @@
             bottom: 0; left: 0; width: 100%; 
             display: flex;
             justify-content: center;
-            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
             z-index: 100;
-            border-radius: 20px 20px 0 0;
+            /* Container styling moved to ::before to handle safe area bleed */
         }
 
+        /* Footer Background Layer */
         footer::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0;
-            bottom: calc(0px - env(safe-area-inset-bottom));
+            /* FORCE BLEED: Extends 100px below the viewport to cover the safe area gap */
+            bottom: -100px; 
             background: var(--footer-bg);
             border-radius: 20px 20px 0 0;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.2);
             z-index: -1;
         }
         
@@ -164,6 +166,7 @@
             grid-template-columns: var(--grid-cols);
             padding: 15px 0 25px 0;
             align-items: center;
+            /* Content padding still respects safe area to push numbers up */
             padding-bottom: calc(25px + env(safe-area-inset-bottom));
             position: relative;
         }
@@ -220,7 +223,7 @@
         .action-btn { padding: 22px 0; border: none; border-radius: 16px; font-size: 1.4rem; font-weight: 800; color: white; }
         .btn-bust { background: #d63031; } .btn-manual { background: #636e72; } .btn-cancel { background: #b2bec3; color: #2d3436; } .btn-ok { background: #00b894; }
 
-        /* UPDATED MANUAL MODAL - Compact Buttons */
+        /* MANUAL MODAL */
         #manualModal { 
             background: #2d3436; 
             top: 50%; left: 50%; 
@@ -244,9 +247,9 @@
         .numpad { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
-            gap: 10px; /* Reduced Gap */
+            gap: 10px; 
             margin-bottom: 25px;
-            max-width: 260px; /* Constrained width to make buttons smaller */
+            max-width: 260px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -254,7 +257,7 @@
         .num-btn { 
             width: 100%; 
             aspect-ratio: 1; 
-            font-size: 2.5rem; /* Font stays large */
+            font-size: 2.5rem; 
             border-radius: 50%; 
             border: none; 
             background: #636e72; 
@@ -427,14 +430,13 @@
 
 <script>
     // --- ICON GENERATOR FOR iOS ---
-    // Generates a Blue (#0984e3) PNG icon with a "7" to prevent the default black icon
     (function generateAppIcon() {
         const canvas = document.createElement('canvas');
         canvas.width = 180;
         canvas.height = 180;
         const ctx = canvas.getContext('2d');
         
-        // Background
+        // Background - Blue #0984e3
         ctx.fillStyle = "#0984e3";
         ctx.fillRect(0, 0, 180, 180);
         
