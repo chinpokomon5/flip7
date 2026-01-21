@@ -151,7 +151,8 @@
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0;
-            bottom: calc(0px - env(safe-area-inset-bottom));
+            /* FORCE BLEED: Extends 100px below the viewport to cover the safe area gap */
+            bottom: -100px;
             background: var(--footer-bg);
             border-radius: 20px 20px 0 0;
             z-index: -1;
@@ -426,7 +427,7 @@
 </div>
 
 <script>
-    // --- APP ICON GENERATION ---
+    // --- ICON GENERATOR FOR iOS ---
     (function generateAppIcon() {
         const canvas = document.createElement('canvas');
         canvas.width = 180;
