@@ -103,30 +103,30 @@
         .v-btn-new { background: #00b894; color: white; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4); }
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
-        /* UPDATED STATS OVERLAY */
+        /* UPDATED STATS OVERLAY - Streamlined */
         #statsOverlay {
             background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
             flex-direction: column; align-items: center; justify-content: center;
             color: white; z-index: 2000;
         }
-        .stats-container { width: 90%; max-width: 700px; }
+        .stats-container { width: 90%; max-width: 750px; }
         .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
         
         .stat-row { 
             display: grid; 
-            /* Name | Graph | Behind */
-            grid-template-columns: 60px 1fr 90px; 
+            /* Name | Graph | Leader/Behind */
+            grid-template-columns: 80px 1fr 150px; 
             gap: 20px;
             background: rgba(255,255,255,0.1); 
-            margin-bottom: 20px; padding: 20px 30px; 
+            margin-bottom: 25px; padding: 20px 30px; 
             border-radius: 20px; align-items: center; 
         }
         
-        .stat-name { font-size: 2rem; font-weight: 800; color: white; text-align: center; }
+        .stat-name { font-size: 2.2rem; font-weight: 800; color: white; text-align: center; }
         
         /* New Progress Bar Styles */
         .progress-track {
-            height: 40px; /* INCREASED HEIGHT */
+            height: 60px; /* INCREASED HEIGHT */
             width: 100%;
             background: rgba(255,255,255,0.2);
             border-radius: 12px;
@@ -135,7 +135,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 15px; /* Inner padding for text */
+            padding: 0 20px; /* Inner padding for text */
         }
         
         .progress-bar {
@@ -148,12 +148,17 @@
         }
 
         /* Text inside bar */
-        .pb-text-left, .pb-text-right {
-            position: relative;
-            z-index: 5;
-            font-weight: 900;
-            font-size: 1.3rem;
+        .pb-text-left {
+            position: relative; z-index: 5;
+            font-weight: 900; font-size: 2rem; /* LARGE FONT */
             color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        
+        .pb-text-right {
+            position: relative; z-index: 5;
+            font-weight: 700; font-size: 1.5rem; /* MEDIUM FONT */
+            color: rgba(255,255,255,0.9);
             text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
@@ -164,10 +169,11 @@
         .val-bad { color: #ff7675; }
         .val-gold { color: #fdcb6e; }
 
-        /* FIXED MANUAL MODAL */
+        /* FIXED MANUAL MODAL - LARGE */
         #manualModal { 
             background: #2d3436; top: 50%; left: 50%; 
-            width: 500px; 
+            /* WIDE WIDTH to fit large buttons */
+            width: 500px; max-width: 90vw;
             height: auto; transform: translate(-50%, -50%); 
             padding: 40px; border-radius: 40px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
@@ -182,12 +188,14 @@
         .numpad { 
             display: grid; grid-template-columns: repeat(3, 1fr); 
             gap: 15px; margin-bottom: 25px; 
-            max-width: 400px; 
+            /* LARGE CONTAINER */
+            max-width: 450px; width: 100%;
             margin-left: auto; margin-right: auto;
         }
         
         .num-btn { 
             width: 100%; aspect-ratio: 1; 
+            /* LARGE FONT */
             font-size: 4rem; 
             border-radius: 50%; border: none; 
             background: #636e72; color: white; 
@@ -200,8 +208,8 @@
 
         .manual-actions-row { 
             display: flex; flex-direction: column; gap: 15px; 
-            max-width: 400px; 
-            margin: 0 auto; width: 100%; 
+            max-width: 450px; width: 100%;
+            margin: 0 auto;
         }
         
         .btn-manual-ok { width: 100%; padding: 25px; background: #00b894; color: white; border: none; border-radius: 20px; font-size: 2rem; font-weight: 900; box-shadow: 0 6px 0 #008b70; margin-bottom: 10px; }
@@ -579,7 +587,7 @@
                      <span class="stat-metric-val val-bad">-${diffLeader}</span>
                    </div>`;
 
-            let to200Text = diff200 <= 0 ? '✓' : `${diff200} left`;
+            let to200Text = diff200 <= 0 ? 'Done' : `${diff200} left`;
 
             let row = document.createElement('div');
             row.className = 'stat-row';
