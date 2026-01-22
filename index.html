@@ -103,19 +103,19 @@
         .v-btn-new { background: #00b894; color: white; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4); }
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
-        /* UPDATED STATS OVERLAY */
+        /* UPDATED STATS OVERLAY - FIXED ALIGNMENT */
         #statsOverlay {
             background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
             flex-direction: column; align-items: center; justify-content: center;
             color: white; z-index: 2000;
         }
-        .stats-container { width: 90%; max-width: 800px; }
+        .stats-container { width: 90%; max-width: 850px; }
         .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
         
         .stat-row { 
             display: grid; 
-            /* Name | Graph | Leader/Behind (fixed width) */
-            grid-template-columns: 80px 1fr 140px; 
+            /* Name | Graph | Leader/Behind (WIDENED TO 240px to stop overlap) */
+            grid-template-columns: 80px 1fr 240px; 
             gap: 20px;
             background: rgba(255,255,255,0.1); 
             margin-bottom: 25px; padding: 20px 30px; 
@@ -123,11 +123,6 @@
         }
         
         .stat-name { font-size: 2.2rem; font-weight: 800; color: white; text-align: center; }
-        
-        .stat-graph-col {
-            display: flex; flex-direction: column; justify-content: center;
-            gap: 5px; 
-        }
         
         .progress-track {
             height: 75px; 
@@ -165,9 +160,9 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
-        /* UPDATED: Align right for the last column */
+        /* Stats Metric: Align Right */
         .stat-metric { display: flex; flex-direction: column; align-items: center; }
-        .stat-row .stat-metric:last-child { align-items: flex-end; } /* Right Align */
+        .stat-row .stat-metric:last-child { align-items: flex-end; } 
 
         .stat-metric-label { font-size: 0.9rem; color: #b2bec3; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
         .stat-metric-val { font-size: 2.5rem; font-weight: 900; color: white; }
@@ -175,11 +170,11 @@
         .val-bad { color: #ff7675; }
         .val-gold { color: #fdcb6e; }
 
-        /* FIXED MANUAL MODAL - RESIZED SMALLER */
+        /* FIXED MANUAL MODAL - SIZED DOWN */
         #manualModal { 
             background: #2d3436; top: 50%; left: 50%; 
-            /* REDUCED WIDTH */
-            width: 440px; max-width: 90vw;
+            /* SLIGHTLY SMALLER */
+            width: 460px; max-width: 90vw;
             height: auto; transform: translate(-50%, -50%); 
             padding: 40px; border-radius: 40px; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
@@ -194,14 +189,14 @@
         .numpad { 
             display: grid; grid-template-columns: repeat(3, 1fr); 
             gap: 15px; margin-bottom: 25px; 
-            /* REDUCED MAX-WIDTH */
-            max-width: 380px; width: 100%;
+            /* SMALLER MAX WIDTH */
+            max-width: 400px; width: 100%;
             margin-left: auto; margin-right: auto;
         }
         
         .num-btn { 
             width: 100%; aspect-ratio: 1; 
-            /* ADJUSTED FONT */
+            /* SMALLER FONT SIZE */
             font-size: 3.5rem; 
             border-radius: 50%; border: none; 
             background: #636e72; color: white; 
@@ -214,7 +209,7 @@
 
         .manual-actions-row { 
             display: flex; flex-direction: column; gap: 15px; 
-            max-width: 380px; width: 100%;
+            max-width: 400px; width: 100%;
             margin: 0 auto;
         }
         
@@ -583,9 +578,9 @@
             
             let pct = Math.min((totals[i] / 200) * 100, 100);
             
+            // Logic: Hide the "BEHIND" label text if leader, but keep structure
             let behindHTML = isLeader 
-                ? `<div class="stat-metric">
-                     <div class="stat-metric-label" style="visibility:hidden">Behind</div>
+                ? `<div class="stat-metric" style="justify-content: center;">
                      <span class="stat-metric-val val-gold">Leader</span>
                    </div>` 
                 : `<div class="stat-metric">
