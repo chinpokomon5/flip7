@@ -109,21 +109,42 @@
             flex-direction: column; align-items: center; justify-content: center;
             color: white; z-index: 2000;
         }
-        .stats-container { width: 90%; max-width: 600px; }
+        .stats-container { width: 90%; max-width: 700px; }
         .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
+        
         .stat-row { 
-            display: grid; grid-template-columns: 1fr 1.2fr 1.2fr; 
-            background: rgba(255,255,255,0.1); margin-bottom: 20px; padding: 20px 30px; 
+            display: grid; 
+            /* Name | Graph | To 200 | Behind */
+            grid-template-columns: 50px 1fr 100px 90px; 
+            gap: 20px;
+            background: rgba(255,255,255,0.1); 
+            margin-bottom: 20px; padding: 20px 30px; 
             border-radius: 20px; align-items: center; 
         }
-        .stat-name { font-size: 2rem; font-weight: 800; color: white; }
+        
+        .stat-name { font-size: 2rem; font-weight: 800; color: white; text-align: center; }
+        
+        /* New Progress Bar Styles */
+        .progress-track {
+            height: 16px; width: 100%;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0984e3, #00b894);
+            border-radius: 8px;
+            transition: width 0.5s ease-out;
+        }
+
         .stat-metric { display: flex; flex-direction: column; align-items: center; }
         .stat-metric-label { font-size: 0.9rem; color: #b2bec3; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
         .stat-metric-val { font-size: 2.2rem; font-weight: 900; color: white; }
         .val-good { color: #00b894; }
         .val-bad { color: #ff7675; }
         .val-gold { color: #fdcb6e; }
-        .stats-hint { text-align: center; color: #636e72; margin-top: 40px; font-size: 1.2rem; font-weight: bold; }
 
         /* MANUAL MODAL */
         #manualModal { background: #2d3436; top: 50%; left: 50%; width: 440px; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; flex-direction: column; }
@@ -266,7 +287,6 @@
     <div class="stats-container">
         <div class="stats-title">GAME STATS</div>
         <div id="statsContent"></div>
-        <div class="stats-hint">(Tap anywhere to close)</div>
     </div>
 </div>
 
@@ -493,28 +513,42 @@
         for(let i=0; i<4; i++) {
             const diff200 = 200 - totals[i];
             const diffLeader = max - totals[i];
+            const isLeader = (diffLeader === 0);
             
-            // Build Labels
-            let to200HTML = diff200 <= 0 
-                ? `<span class="stat-metric-val val-good">Done</span>` 
+            // Progress Bar Width
+            let pct = Math.min((totals[i] / 200) * 100, 100);
+            
+            let behindHTML = isLeader 
+                ? `<div class="stat-metric">
+                     <div class="stat-metric-label" style="visibility:hidden">Behind</div>
+                     <span class="stat-metric-val val-gold">Leader</span>
+                   </div>` 
+                : `<div class="stat-metric">
+                     <div class="stat-metric-label">Behind</div>
+                     <span class="stat-metric-val val-bad">-${diffLeader}</span>
+                   </div>`;
+
+            let to200Val = diff200 <= 0 
+                ? `<span class="stat-metric-val val-good">✓</span>` 
                 : `<span class="stat-metric-val">${diff200}</span>`;
-                
-            let toLeaderHTML = diffLeader === 0 
-                ? `<span class="stat-metric-val val-gold">Leader</span>` 
-                : `<span class="stat-metric-val val-bad">-${diffLeader}</span>`;
 
             let row = document.createElement('div');
             row.className = 'stat-row';
             row.innerHTML = `
                 <div class="stat-name">${players[i]}</div>
+                
+                <div class="progress-container" style="display:flex; align-items:center;">
+                    <div class="progress-track">
+                        <div class="progress-bar" style="width: ${pct}%;"></div>
+                    </div>
+                </div>
+
                 <div class="stat-metric">
                     <div class="stat-metric-label">To 200</div>
-                    ${to200HTML}
+                    ${to200Val}
                 </div>
-                <div class="stat-metric">
-                    <div class="stat-metric-label">Behind</div>
-                    ${toLeaderHTML}
-                </div>
+                
+                ${behindHTML}
             `;
             content.appendChild(row);
         }
