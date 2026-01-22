@@ -10,14 +10,18 @@
 
     <style>
         :root {
+            /* MODERN PALETTE */
             --bg-color: #f0f2f5;
             --header-gradient: linear-gradient(135deg, #ff9966, #ff5e62);
             --card-bg: #ffffff;
             --footer-bg: #2d3436; 
             --text-color: #2d3436;
+            
+            /* Game Card Colors */
             --card-num-bg: #0984e3;
             --card-bonus-bg: #e17055;
             --card-mult-bg: #a29bfe;
+            
             --grid-cols: 50px 1fr 1fr 1fr 1fr;
         }
 
@@ -48,7 +52,7 @@
         .btn-reset { background-color: #ff7675; flex-grow: 1; }
 
         /* FOOTER */
-        footer { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; box-shadow: 0 -8px 30px rgba(0,0,0,0.2); z-index: 100; border-radius: 20px 20px 0 0; }
+        footer { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; box-shadow: 0 -8px 30px rgba(0,0,0,0.2); z-index: 100; border-radius: 20px 20px 0 0; cursor: pointer; }
         footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: -100px; background: var(--footer-bg); border-radius: 20px 20px 0 0; z-index: -1; }
         .footer-content { width: 100%; max-width: 1000px; display: grid; grid-template-columns: var(--grid-cols); padding: 15px 0 25px 0; align-items: center; padding-bottom: calc(25px + env(safe-area-inset-bottom)); position: relative; }
         .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
@@ -59,8 +63,8 @@
         .is-leading .crown { visibility: visible; }
         .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#636e72; height: 100%; }
 
-        /* OVERLAYS */
-        #scoringOverlay, #victoryOverlay, #manualModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; }
+        /* OVERLAYS COMMON */
+        #scoringOverlay, #victoryOverlay, #manualModal, #statsOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; }
         
         /* SCORING OVERLAY */
         #scoringOverlay { background: white; flex-direction: column; transition: opacity 0.3s; }
@@ -99,62 +103,37 @@
         .v-btn-new { background: #00b894; color: white; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4); }
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
-        /* MANUAL MODAL - REDESIGNED */
-        #manualModal { 
-            background: #2d3436; top: 50%; left: 50%; 
-            width: 460px; /* Slightly wider for bigger buttons */
-            height: auto; transform: translate(-50%, -50%); 
-            padding: 40px; border-radius: 40px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-            display: none; flex-direction: column;
+        /* STATS OVERLAY */
+        #statsOverlay {
+            background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; z-index: 2000;
         }
-        
-        #manualDisplay {
-            color: white; font-size: 8rem; text-align: center; 
-            margin-bottom: 30px; font-weight: 900; line-height: 1;
+        .stats-container { width: 90%; max-width: 600px; }
+        .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
+        .stat-row { 
+            display: grid; grid-template-columns: 1fr 1.2fr 1.2fr; 
+            background: rgba(255,255,255,0.1); margin-bottom: 20px; padding: 20px 30px; 
+            border-radius: 20px; align-items: center; 
         }
+        .stat-name { font-size: 2rem; font-weight: 800; color: white; }
+        .stat-metric { display: flex; flex-direction: column; align-items: center; }
+        .stat-metric-label { font-size: 0.9rem; color: #b2bec3; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+        .stat-metric-val { font-size: 2.2rem; font-weight: 900; color: white; }
+        .val-good { color: #00b894; }
+        .val-bad { color: #ff7675; }
+        .val-gold { color: #fdcb6e; }
+        .stats-hint { text-align: center; color: #636e72; margin-top: 40px; font-size: 1.2rem; font-weight: bold; }
 
-        .numpad { 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; margin-bottom: 25px; 
-            max-width: 360px; /* Increased max width for larger buttons */
-            margin-left: auto; margin-right: auto;
-        }
-        
-        .num-btn { 
-            width: 100%; aspect-ratio: 1; 
-            font-size: 3.5rem; /* Increased Font */
-            border-radius: 50%; border: none; 
-            background: #636e72; color: white; 
-            font-weight: 700;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-        }
-        .num-btn:active { transform: translateY(2px); box-shadow: none; }
-
-        /* Special coloring for Clear */
-        .btn-clear { background: #d63031 !important; }
-
-        .manual-actions-row {
-            display: flex; flex-direction: column; gap: 15px; 
-            max-width: 360px; margin: 0 auto; width: 100%;
-        }
-
-        .btn-manual-ok {
-            width: 100%; padding: 25px; 
-            background: #00b894; color: white; 
-            border: none; border-radius: 20px; /* Rectangular with rounded corners */
-            font-size: 2rem; font-weight: 900;
-            box-shadow: 0 6px 0 #008b70;
-            margin-bottom: 10px;
-        }
+        /* MANUAL MODAL */
+        #manualModal { background: #2d3436; top: 50%; left: 50%; width: 440px; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; flex-direction: column; }
+        #manualDisplay { color: white; font-size: 8rem; text-align: center; margin-bottom: 30px; font-weight: 900; line-height: 1; }
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; max-width: 260px; margin-left: auto; margin-right: auto; }
+        .num-btn { width: 100%; aspect-ratio: 1; font-size: 2.5rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: bold; }
+        .manual-actions-row { display: flex; flex-direction: column; gap: 15px; max-width: 260px; margin: 0 auto; width: 100%; }
+        .btn-manual-ok { width: 100%; padding: 25px; background: #00b894; color: white; border: none; border-radius: 20px; font-size: 2rem; font-weight: 900; box-shadow: 0 6px 0 #008b70; margin-bottom: 10px; }
         .btn-manual-ok:active { transform: translateY(4px); box-shadow: 0 2px 0 #008b70; }
-
-        .manual-cancel-btn { 
-            width: 100%; padding: 18px; 
-            background: transparent; color: #b2bec3; 
-            border: 2px solid #636e72; border-radius: 15px; 
-            font-size: 1.2rem; font-weight: bold; 
-        }
+        .manual-cancel-btn { width: 100%; padding: 18px; background: transparent; color: #b2bec3; border: 2px solid #636e72; border-radius: 15px; font-size: 1.2rem; font-weight: bold; }
 
         .flying-score { position: fixed; font-size: 5rem; font-weight: 900; color: var(--text-color); z-index: 9999; pointer-events: none; transition: all 0.5s ease-in-out; text-shadow: 0px 0px 4px rgba(255,255,255,0.8); }
     </style>
@@ -179,7 +158,7 @@
     </div>
 </div>
 
-<footer>
+<footer onclick="showStats()">
     <div class="footer-content">
         <div class="sigma-icon">Σ</div>
         <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-val" id="total-0">0</span></div>
@@ -249,10 +228,10 @@
         <button class="num-btn" onclick="pressNum(7)">7</button>
         <button class="num-btn" onclick="pressNum(8)">8</button>
         <button class="num-btn" onclick="pressNum(9)">9</button>
-        <button class="num-btn btn-clear" onclick="pressNum('C')">C</button>
+        <button class="num-btn btn-clear" style="background:#d63031" onclick="pressNum('C')">C</button>
         <button class="num-btn" onclick="pressNum(0)">0</button>
-        <div></div> </div>
-    
+        <div></div>
+    </div>
     <div class="manual-actions-row">
         <button class="btn-manual-ok" onclick="pressNum('OK')">OK</button>
         <button class="manual-cancel-btn" onclick="closeManual()">CANCEL</button>
@@ -280,6 +259,14 @@
     <div class="victory-actions">
         <button class="v-btn v-btn-close" onclick="closeVictory()">CLOSE</button>
         <button class="v-btn v-btn-new" onclick="startNewGameFromVictory()">NEW GAME</button>
+    </div>
+</div>
+
+<div id="statsOverlay" onclick="closeStats()">
+    <div class="stats-container">
+        <div class="stats-title">GAME STATS</div>
+        <div id="statsContent"></div>
+        <div class="stats-hint">(Tap anywhere to close)</div>
     </div>
 </div>
 
@@ -495,6 +482,49 @@
 
     function closeVictory() { playClick(); document.getElementById('victoryOverlay').style.display = 'none'; }
     function startNewGameFromVictory() { resetGame(false); }
+
+    function showStats() {
+        playClick();
+        const totals = calculateTotals();
+        const max = Math.max(...totals);
+        const content = document.getElementById('statsContent');
+        content.innerHTML = '';
+
+        for(let i=0; i<4; i++) {
+            const diff200 = 200 - totals[i];
+            const diffLeader = max - totals[i];
+            
+            // Build Labels
+            let to200HTML = diff200 <= 0 
+                ? `<span class="stat-metric-val val-good">Done</span>` 
+                : `<span class="stat-metric-val">${diff200}</span>`;
+                
+            let toLeaderHTML = diffLeader === 0 
+                ? `<span class="stat-metric-val val-gold">Leader</span>` 
+                : `<span class="stat-metric-val val-bad">-${diffLeader}</span>`;
+
+            let row = document.createElement('div');
+            row.className = 'stat-row';
+            row.innerHTML = `
+                <div class="stat-name">${players[i]}</div>
+                <div class="stat-metric">
+                    <div class="stat-metric-label">To 200</div>
+                    ${to200HTML}
+                </div>
+                <div class="stat-metric">
+                    <div class="stat-metric-label">Behind</div>
+                    ${toLeaderHTML}
+                </div>
+            `;
+            content.appendChild(row);
+        }
+        document.getElementById('statsOverlay').style.display = 'flex';
+    }
+
+    function closeStats() {
+        playClick();
+        document.getElementById('statsOverlay').style.display = 'none';
+    }
 
     function showManual() { playClick(); manualValue = ""; document.getElementById('manualDisplay').innerText = "0"; document.getElementById('manualModal').style.display = 'block'; }
     function closeManual() { playClick(); document.getElementById('manualModal').style.display = 'none'; }
