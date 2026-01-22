@@ -103,7 +103,7 @@
         .v-btn-new { background: #00b894; color: white; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4); }
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
-        /* STATS OVERLAY */
+        /* UPDATED STATS OVERLAY */
         #statsOverlay {
             background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
             flex-direction: column; align-items: center; justify-content: center;
@@ -114,8 +114,8 @@
         
         .stat-row { 
             display: grid; 
-            /* Name | Graph | To 200 | Behind */
-            grid-template-columns: 50px 1fr 100px 90px; 
+            /* Name | Graph | Behind */
+            grid-template-columns: 60px 1fr 90px; 
             gap: 20px;
             background: rgba(255,255,255,0.1); 
             margin-bottom: 20px; padding: 20px 30px; 
@@ -126,17 +126,35 @@
         
         /* New Progress Bar Styles */
         .progress-track {
-            height: 16px; width: 100%;
+            height: 40px; /* INCREASED HEIGHT */
+            width: 100%;
             background: rgba(255,255,255,0.2);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px; /* Inner padding for text */
         }
+        
         .progress-bar {
-            height: 100%;
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
             background: linear-gradient(90deg, #0984e3, #00b894);
-            border-radius: 8px;
+            border-radius: 12px;
             transition: width 0.5s ease-out;
+            z-index: 1; /* Behind text */
+        }
+
+        /* Text inside bar */
+        .pb-text-left, .pb-text-right {
+            position: relative;
+            z-index: 5;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
 
         .stat-metric { display: flex; flex-direction: column; align-items: center; }
@@ -146,12 +164,46 @@
         .val-bad { color: #ff7675; }
         .val-gold { color: #fdcb6e; }
 
-        /* MANUAL MODAL */
-        #manualModal { background: #2d3436; top: 50%; left: 50%; width: 440px; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); display: none; flex-direction: column; }
-        #manualDisplay { color: white; font-size: 8rem; text-align: center; margin-bottom: 30px; font-weight: 900; line-height: 1; }
-        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; max-width: 260px; margin-left: auto; margin-right: auto; }
-        .num-btn { width: 100%; aspect-ratio: 1; font-size: 2.5rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: bold; }
-        .manual-actions-row { display: flex; flex-direction: column; gap: 15px; max-width: 260px; margin: 0 auto; width: 100%; }
+        /* FIXED MANUAL MODAL */
+        #manualModal { 
+            background: #2d3436; top: 50%; left: 50%; 
+            width: 500px; 
+            height: auto; transform: translate(-50%, -50%); 
+            padding: 40px; border-radius: 40px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
+            display: none; flex-direction: column;
+        }
+        
+        #manualDisplay {
+            color: white; font-size: 8rem; text-align: center; 
+            margin-bottom: 30px; font-weight: 900; line-height: 1;
+        }
+
+        .numpad { 
+            display: grid; grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; margin-bottom: 25px; 
+            max-width: 400px; 
+            margin-left: auto; margin-right: auto;
+        }
+        
+        .num-btn { 
+            width: 100%; aspect-ratio: 1; 
+            font-size: 4rem; 
+            border-radius: 50%; border: none; 
+            background: #636e72; color: white; 
+            font-weight: 700;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .num-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .btn-clear { background: #d63031 !important; }
+
+        .manual-actions-row { 
+            display: flex; flex-direction: column; gap: 15px; 
+            max-width: 400px; 
+            margin: 0 auto; width: 100%; 
+        }
+        
         .btn-manual-ok { width: 100%; padding: 25px; background: #00b894; color: white; border: none; border-radius: 20px; font-size: 2rem; font-weight: 900; box-shadow: 0 6px 0 #008b70; margin-bottom: 10px; }
         .btn-manual-ok:active { transform: translateY(4px); box-shadow: 0 2px 0 #008b70; }
         .manual-cancel-btn { width: 100%; padding: 18px; background: transparent; color: #b2bec3; border: 2px solid #636e72; border-radius: 15px; font-size: 1.2rem; font-weight: bold; }
@@ -515,7 +567,6 @@
             const diffLeader = max - totals[i];
             const isLeader = (diffLeader === 0);
             
-            // Progress Bar Width
             let pct = Math.min((totals[i] / 200) * 100, 100);
             
             let behindHTML = isLeader 
@@ -528,26 +579,21 @@
                      <span class="stat-metric-val val-bad">-${diffLeader}</span>
                    </div>`;
 
-            let to200Val = diff200 <= 0 
-                ? `<span class="stat-metric-val val-good">✓</span>` 
-                : `<span class="stat-metric-val">${diff200}</span>`;
+            let to200Text = diff200 <= 0 ? '✓' : `${diff200} left`;
 
             let row = document.createElement('div');
             row.className = 'stat-row';
             row.innerHTML = `
                 <div class="stat-name">${players[i]}</div>
                 
-                <div class="progress-container" style="display:flex; align-items:center;">
+                <div class="progress-container" style="width:100%">
                     <div class="progress-track">
                         <div class="progress-bar" style="width: ${pct}%;"></div>
+                        <span class="pb-text-left">${totals[i]}</span>
+                        <span class="pb-text-right">${to200Text}</span>
                     </div>
                 </div>
 
-                <div class="stat-metric">
-                    <div class="stat-metric-label">To 200</div>
-                    ${to200Val}
-                </div>
-                
                 ${behindHTML}
             `;
             content.appendChild(row);
