@@ -22,6 +22,7 @@
             --card-bonus-bg: #e17055;
             --card-mult-bg: #a29bfe;
             
+            /* Dynamic Grid: Will be updated by JS */
             --grid-cols: 50px 1fr 1fr 1fr 1fr;
         }
 
@@ -34,14 +35,15 @@
 
         /* HEADER */
         .app-header { flex-shrink: 0; width: 100%; background: var(--header-gradient); z-index: 50; padding-top: env(safe-area-inset-top); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
-        .header-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: var(--grid-cols); text-align: center; align-items: center; padding: 15px 0; }
-        .header-name { font-size: 2.5rem; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: var(--grid-cols); text-align: center; align-items: center; padding: 15px 0; transition: all 0.3s; }
+        .header-name { font-size: 2.5rem; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px; }
+        .header-name:active { transform: scale(0.95); opacity: 0.8; }
 
         /* CONTENT */
         .scroll-container { flex: 1; width: 100%; max-width: 1000px; margin: 0 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 180px; padding-top: 15px; }
-        .round-row { display: grid; grid-template-columns: var(--grid-cols); align-items: center; text-align: center; background: var(--card-bg); margin: 0 15px 12px 15px; padding: 10px 0; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .round-row { display: grid; grid-template-columns: var(--grid-cols); align-items: center; text-align: center; background: var(--card-bg); margin: 0 15px 12px 15px; padding: 10px 0; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: all 0.3s; }
         .round-num { font-size: 1.2rem; color: #b2bec3; font-weight: 800; }
-        .score-cell { padding: 0 5px; }
+        .score-cell { padding: 0 5px; overflow: hidden; }
         .score-display { width: 90%; border: 2px solid #dfe6e9; border-radius: 12px; font-size: 2.8rem; font-weight: 800; background: #fafafa; display: flex; align-items: center; justify-content: center; height: 3.6rem; color: var(--text-color); margin: 0 auto; }
 
         /* CONTROLS */
@@ -54,9 +56,9 @@
         /* FOOTER */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; box-shadow: 0 -8px 30px rgba(0,0,0,0.2); z-index: 100; border-radius: 20px 20px 0 0; cursor: pointer; }
         footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: -100px; background: var(--footer-bg); border-radius: 20px 20px 0 0; z-index: -1; }
-        .footer-content { width: 100%; max-width: 1000px; display: grid; grid-template-columns: var(--grid-cols); padding: 15px 0 25px 0; align-items: center; padding-bottom: calc(25px + env(safe-area-inset-bottom)); position: relative; }
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
-        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; color: white; }
+        .footer-content { width: 100%; max-width: 1000px; display: grid; grid-template-columns: var(--grid-cols); padding: 15px 0 25px 0; align-items: center; padding-bottom: calc(25px + env(safe-area-inset-bottom)); position: relative; transition: all 0.3s; }
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 2px; padding: 5px 0; overflow: hidden; }
+        .total-val { font-size: 4rem; font-weight: 900; line-height: 0.9; color: white; white-space: nowrap; }
         .is-leading { background-color: #fdcb6e; box-shadow: 0 0 20px rgba(253, 203, 110, 0.4); }
         .is-leading .total-val { color: var(--text-color); }
         .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: 0px; }
@@ -64,7 +66,7 @@
         .sigma-icon { display:flex; align-items:center; justify-content:center; font-size:2rem; color:#636e72; height: 100%; }
 
         /* OVERLAYS COMMON */
-        #scoringOverlay, #victoryOverlay, #manualModal, #statsOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; }
+        #scoringOverlay, #victoryOverlay, #manualModal, #statsOverlay, #playerManagerOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; }
         
         /* SCORING OVERLAY */
         #scoringOverlay { background: white; flex-direction: column; transition: opacity 0.3s; }
@@ -103,119 +105,93 @@
         .v-btn-new { background: #00b894; color: white; box-shadow: 0 10px 20px rgba(0, 184, 148, 0.4); }
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
-        /* UPDATED STATS OVERLAY - FIXED ALIGNMENT */
-        #statsOverlay {
-            background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
-            flex-direction: column; align-items: center; justify-content: center;
-            color: white; z-index: 2000;
-        }
+        /* STATS OVERLAY */
+        #statsOverlay { background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px); flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 2000; }
         .stats-container { width: 90%; max-width: 850px; }
         .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
-        
-        .stat-row { 
-            display: grid; 
-            /* Name | Graph | Leader/Behind (WIDENED TO 240px to stop overlap) */
-            grid-template-columns: 80px 1fr 240px; 
-            gap: 20px;
-            background: rgba(255,255,255,0.1); 
-            margin-bottom: 25px; padding: 20px 30px; 
-            border-radius: 20px; align-items: center; 
-        }
-        
+        .stat-row { display: grid; grid-template-columns: 80px 1fr 240px; gap: 20px; background: rgba(255,255,255,0.1); margin-bottom: 25px; padding: 20px 30px; border-radius: 20px; align-items: center; }
         .stat-name { font-size: 2.2rem; font-weight: 800; color: white; text-align: center; }
-        
-        .progress-track {
-            height: 75px; 
-            width: 100%;
-            background: rgba(255,255,255,0.2);
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px; 
-        }
-        
-        .progress-bar {
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            background: linear-gradient(90deg, #0984e3, #00b894);
-            border-radius: 15px;
-            transition: width 0.5s ease-out;
-            z-index: 1; 
-        }
-
-        .pb-text-left {
-            position: relative; z-index: 5;
-            font-weight: 900; font-size: 3rem; 
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-        }
-        
-        .pb-text-right {
-            position: relative; z-index: 5;
-            font-weight: 700; font-size: 1.8rem;
-            color: rgba(255,255,255,0.95);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-        }
-
-        /* Stats Metric: Align Right */
+        .progress-track { height: 75px; width: 100%; background: rgba(255,255,255,0.2); border-radius: 15px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        .progress-bar { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #0984e3, #00b894); border-radius: 15px; transition: width 0.5s ease-out; z-index: 1; }
+        .pb-text-left { position: relative; z-index: 5; font-weight: 900; font-size: 3rem; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .pb-text-right { position: relative; z-index: 5; font-weight: 700; font-size: 1.8rem; color: rgba(255,255,255,0.95); text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
         .stat-metric { display: flex; flex-direction: column; align-items: center; }
         .stat-row .stat-metric:last-child { align-items: flex-end; } 
-
         .stat-metric-label { font-size: 0.9rem; color: #b2bec3; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
         .stat-metric-val { font-size: 2.5rem; font-weight: 900; color: white; }
-        .val-good { color: #00b894; }
-        .val-bad { color: #ff7675; }
-        .val-gold { color: #fdcb6e; }
+        .val-good { color: #00b894; } .val-bad { color: #ff7675; } .val-gold { color: #fdcb6e; }
 
-        /* FIXED MANUAL MODAL - SIZED DOWN */
-        #manualModal { 
-            background: #2d3436; top: 50%; left: 50%; 
-            /* SLIGHTLY SMALLER */
-            width: 460px; max-width: 90vw;
-            height: auto; transform: translate(-50%, -50%); 
-            padding: 40px; border-radius: 40px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
-            display: none; flex-direction: column;
-        }
-        
-        #manualDisplay {
-            color: white; font-size: 8rem; text-align: center; 
-            margin-bottom: 30px; font-weight: 900; line-height: 1;
-        }
-
-        .numpad { 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; margin-bottom: 25px; 
-            /* SMALLER MAX WIDTH */
-            max-width: 400px; width: 100%;
-            margin-left: auto; margin-right: auto;
-        }
-        
-        .num-btn { 
-            width: 100%; aspect-ratio: 1; 
-            /* SMALLER FONT SIZE */
-            font-size: 3.5rem; 
-            border-radius: 50%; border: none; 
-            background: #636e72; color: white; 
-            font-weight: 700;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
-        }
+        /* MANUAL MODAL */
+        #manualModal { background: #2d3436; top: 50%; left: 50%; width: 500px; max-width: 95vw; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: none; flex-direction: column; }
+        #manualDisplay { color: white; font-size: 8rem; text-align: center; margin-bottom: 30px; font-weight: 900; line-height: 1; }
+        .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
+        .num-btn { width: 100%; aspect-ratio: 1; font-size: 3.5rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: 700; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
         .num-btn:active { transform: translateY(2px); box-shadow: none; }
-
         .btn-clear { background: #d63031 !important; }
-
-        .manual-actions-row { 
-            display: flex; flex-direction: column; gap: 15px; 
-            max-width: 400px; width: 100%;
-            margin: 0 auto;
-        }
-        
+        .manual-actions-row { display: flex; flex-direction: column; gap: 15px; max-width: 400px; width: 100%; margin: 0 auto; }
         .btn-manual-ok { width: 100%; padding: 25px; background: #00b894; color: white; border: none; border-radius: 20px; font-size: 2rem; font-weight: 900; box-shadow: 0 6px 0 #008b70; margin-bottom: 10px; }
         .btn-manual-ok:active { transform: translateY(4px); box-shadow: 0 2px 0 #008b70; }
         .manual-cancel-btn { width: 100%; padding: 18px; background: transparent; color: #b2bec3; border: 2px solid #636e72; border-radius: 15px; font-size: 1.2rem; font-weight: bold; }
+
+        /* PLAYER MANAGER OVERLAY & CUSTOM KEYBOARD */
+        #playerManagerOverlay {
+            background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
+            display: none; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding-top: 60px; z-index: 3000;
+        }
+        .pm-title { font-size: 2rem; color: #fab1a0; font-weight: 900; margin-bottom: 20px; letter-spacing: 1px; }
+        
+        /* Scrollable Player List */
+        .pm-list-container {
+            width: 90%; max-width: 500px;
+            max-height: 30vh; overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .pm-player-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.1); padding: 15px 20px;
+            margin-bottom: 10px; border-radius: 15px;
+            border: 2px solid transparent; transition: all 0.2s;
+        }
+        .pm-player-row.active-edit { border-color: #0984e3; background: rgba(9, 132, 227, 0.2); }
+        .pm-name-display { font-size: 1.8rem; color: white; font-weight: bold; }
+        .pm-row-actions { display: flex; gap: 15px; }
+        .pm-icon-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px; }
+        
+        .pm-add-btn {
+            background: #2ecc71; color: white; border: none; padding: 15px 30px;
+            border-radius: 50px; font-size: 1.2rem; font-weight: bold;
+            margin-bottom: 20px; box-shadow: 0 4px 0 #27ae60;
+        }
+        
+        .pm-close-btn {
+            position: absolute; top: 40px; right: 30px;
+            background: transparent; color: #b2bec3; border: none;
+            font-size: 1.2rem; font-weight: bold;
+        }
+
+        /* CUSTOM KEYBOARD CONTAINER */
+        .kb-container {
+            width: 100%; max-width: 900px;
+            background: #2d3436;
+            padding: 10px 5px 30px 5px;
+            border-radius: 20px 20px 0 0;
+            position: absolute; bottom: 0;
+            display: flex; flex-direction: column; gap: 8px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+        }
+        .kb-row { display: flex; justify-content: center; gap: 6px; width: 100%; }
+        .kb-key {
+            background: #636e72; color: white;
+            border: none; border-radius: 8px;
+            font-size: 1.5rem; font-weight: bold;
+            height: 55px; min-width: 40px; flex-grow: 1; max-width: 70px;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+        }
+        .kb-key:active { background: #dfe6e9; color: #2d3436; transform: translateY(2px); box-shadow: none; }
+        .kb-key-wide { flex-grow: 2; max-width: 100px; background: #b2bec3; color: #2d3436; }
+        .kb-key-space { flex-grow: 5; max-width: 400px; }
+        .kb-key-done { background: #0984e3; color: white; flex-grow: 2; max-width: 120px; }
 
         .flying-score { position: fixed; font-size: 5rem; font-weight: 900; color: var(--text-color); z-index: 9999; pointer-events: none; transition: all 0.5s ease-in-out; text-shadow: 0px 0px 4px rgba(255,255,255,0.8); }
     </style>
@@ -223,13 +199,8 @@
 <body>
 
 <header class="app-header">
-    <div class="header-content">
-        <div></div> 
-        <div class="header-name">爸</div>
-        <div class="header-name">媽</div>
-        <div class="header-name">誠</div>
-        <div class="header-name">娜</div>
-    </div>
+    <div class="header-content" id="headerContent">
+        </div>
 </header>
 
 <div class="scroll-container" id="scrollContainer">
@@ -241,13 +212,8 @@
 </div>
 
 <footer onclick="showStats()">
-    <div class="footer-content">
-        <div class="sigma-icon">Σ</div>
-        <div class="total-box" id="box-0"><span class="crown">👑</span><span class="total-val" id="total-0">0</span></div>
-        <div class="total-box" id="box-1"><span class="crown">👑</span><span class="total-val" id="total-1">0</span></div>
-        <div class="total-box" id="box-2"><span class="crown">👑</span><span class="total-val" id="total-2">0</span></div>
-        <div class="total-box" id="box-3"><span class="crown">👑</span><span class="total-val" id="total-3">0</span></div>
-    </div>
+    <div class="footer-content" id="footerContent">
+        </div>
 </footer>
 
 <div id="scoringOverlay">
@@ -351,6 +317,57 @@
     </div>
 </div>
 
+<div id="playerManagerOverlay">
+    <div class="pm-title">MANAGE PLAYERS</div>
+    <button class="pm-close-btn" onclick="closePlayerManager()">CLOSE</button>
+    
+    <div class="pm-list-container" id="playerListContainer">
+        </div>
+    
+    <button class="pm-add-btn" onclick="addNewPlayer()">+ ADD PLAYER</button>
+    
+    <div class="kb-container" id="customKeyboard" style="display:none;">
+        <div class="kb-row">
+            <button class="kb-key" onclick="kbType('Q')">Q</button>
+            <button class="kb-key" onclick="kbType('W')">W</button>
+            <button class="kb-key" onclick="kbType('E')">E</button>
+            <button class="kb-key" onclick="kbType('R')">R</button>
+            <button class="kb-key" onclick="kbType('T')">T</button>
+            <button class="kb-key" onclick="kbType('Y')">Y</button>
+            <button class="kb-key" onclick="kbType('U')">U</button>
+            <button class="kb-key" onclick="kbType('I')">I</button>
+            <button class="kb-key" onclick="kbType('O')">O</button>
+            <button class="kb-key" onclick="kbType('P')">P</button>
+        </div>
+        <div class="kb-row">
+            <button class="kb-key" onclick="kbType('A')">A</button>
+            <button class="kb-key" onclick="kbType('S')">S</button>
+            <button class="kb-key" onclick="kbType('D')">D</button>
+            <button class="kb-key" onclick="kbType('F')">F</button>
+            <button class="kb-key" onclick="kbType('G')">G</button>
+            <button class="kb-key" onclick="kbType('H')">H</button>
+            <button class="kb-key" onclick="kbType('J')">J</button>
+            <button class="kb-key" onclick="kbType('K')">K</button>
+            <button class="kb-key" onclick="kbType('L')">L</button>
+        </div>
+        <div class="kb-row">
+            <button class="kb-key kb-key-wide" onclick="kbType('CAPS')">⇧</button>
+            <button class="kb-key" onclick="kbType('Z')">Z</button>
+            <button class="kb-key" onclick="kbType('X')">X</button>
+            <button class="kb-key" onclick="kbType('C')">C</button>
+            <button class="kb-key" onclick="kbType('V')">V</button>
+            <button class="kb-key" onclick="kbType('B')">B</button>
+            <button class="kb-key" onclick="kbType('N')">N</button>
+            <button class="kb-key" onclick="kbType('M')">M</button>
+            <button class="kb-key kb-key-wide" onclick="kbType('BACK')">⌫</button>
+        </div>
+        <div class="kb-row">
+            <button class="kb-key kb-key-space" onclick="kbType(' ')">SPACE</button>
+            <button class="kb-key kb-key-done" onclick="stopEditing()">DONE</button>
+        </div>
+    </div>
+</div>
+
 <script>
     (function generateAppIcon() {
         const canvas = document.createElement('canvas'); canvas.width = 180; canvas.height = 180; const ctx = canvas.getContext('2d');
@@ -366,21 +383,187 @@
     function playScoreSound() { if(audioCtx.state === 'suspended') audioCtx.resume(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(200, audioCtx.currentTime); gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
     function playVictorySound() { if(audioCtx.state === 'suspended') audioCtx.resume(); const now = audioCtx.currentTime; [440, 554, 659, 880].forEach((freq, i) => { const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = 'triangle'; osc.frequency.value = freq; gain.gain.setValueAtTime(0.2, now + i*0.1); gain.gain.exponentialRampToValueAtTime(0.01, now + i*0.1 + 0.5); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + i*0.1); osc.stop(now + i*0.1 + 0.5); }); }
 
+    // --- GAME STATE ---
     let activeCell = null;
     let activeRowId = 0; 
     let selectedCards = { nums: new Set(), mods: new Set(), x2: false };
     let manualValue = "";
-    const players = ["爸", "媽", "誠", "娜"];
+    
+    // PLAYER DATA
+    let players = ["爸", "媽", "誠", "娜"];
+    let editingPlayerIndex = -1;
 
-    window.addEventListener('load', () => { loadGame(); });
+    // Load from storage if available
+    window.addEventListener('load', () => { 
+        const savedPlayers = localStorage.getItem('flip7_players');
+        if (savedPlayers) { players = JSON.parse(savedPlayers); }
+        initGrid();
+        loadGame(); 
+    });
 
+    function savePlayers() {
+        localStorage.setItem('flip7_players', JSON.stringify(players));
+    }
+
+    // Initialize Grid CSS based on player count
+    function initGrid() {
+        const cols = '50px ' + Array(players.length).fill('1fr').join(' ');
+        document.documentElement.style.setProperty('--grid-cols', cols);
+        renderHeader();
+        renderFooter();
+    }
+
+    function renderHeader() {
+        const content = document.getElementById('headerContent');
+        let html = `<div></div>`; // Spacer
+        players.forEach((p, index) => {
+            html += `<div class="header-name" onclick="openPlayerManager()">${p}</div>`;
+        });
+        content.innerHTML = html;
+    }
+
+    function renderFooter() {
+        const content = document.querySelector('.footer-content');
+        let html = `<div class="sigma-icon">Σ</div>`;
+        players.forEach((p, i) => {
+            html += `<div class="total-box" id="box-${i}"><span class="crown">👑</span><span class="total-val" id="total-${i}">0</span></div>`;
+        });
+        content.innerHTML = html;
+    }
+
+    // --- PLAYER MANAGER ---
+    function openPlayerManager() {
+        playClick();
+        renderPlayerList();
+        document.getElementById('playerManagerOverlay').style.display = 'flex';
+    }
+
+    function closePlayerManager() {
+        playClick();
+        stopEditing();
+        document.getElementById('playerManagerOverlay').style.display = 'none';
+        initGrid(); // Refresh layout
+        // IMPORTANT: Re-render rows to match new player columns
+        reloadRowsForNewLayout(); 
+        calculateTotals();
+        savePlayers();
+    }
+
+    function renderPlayerList() {
+        const container = document.getElementById('playerListContainer');
+        container.innerHTML = '';
+        players.forEach((p, i) => {
+            const isActive = (i === editingPlayerIndex) ? 'active-edit' : '';
+            container.innerHTML += `
+                <div class="pm-player-row ${isActive}">
+                    <div class="pm-name-display">${p}</div>
+                    <div class="pm-row-actions">
+                        <button class="pm-icon-btn" onclick="startEditing(${i})">✏️</button>
+                        <button class="pm-icon-btn" style="color:#ff7675" onclick="removePlayer(${i})">🗑️</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function addNewPlayer() {
+        playClick();
+        players.push("Player");
+        savePlayers();
+        startEditing(players.length - 1);
+    }
+
+    function removePlayer(index) {
+        if(confirm("Remove " + players[index] + "? This will delete their scores.")) {
+            players.splice(index, 1);
+            if(players.length === 0) players = ["Player"]; // Min 1
+            savePlayers();
+            if(editingPlayerIndex === index) stopEditing();
+            renderPlayerList();
+        }
+    }
+
+    // --- CUSTOM KEYBOARD LOGIC ---
+    function startEditing(index) {
+        editingPlayerIndex = index;
+        document.getElementById('customKeyboard').style.display = 'flex';
+        renderPlayerList();
+    }
+
+    function stopEditing() {
+        editingPlayerIndex = -1;
+        document.getElementById('customKeyboard').style.display = 'none';
+        renderPlayerList();
+        savePlayers();
+    }
+
+    function kbType(char) {
+        if(editingPlayerIndex === -1) return;
+        playClick();
+        
+        let currentName = players[editingPlayerIndex];
+        
+        if (char === 'BACK') {
+            players[editingPlayerIndex] = currentName.slice(0, -1);
+        } else if (char === 'CAPS') {
+            // Toggle logic simplified for demo, assuming caps always for now
+        } else if (char === 'DONE') { // Handled by separate button usually
+            stopEditing();
+            return;
+        } else {
+            if(currentName.length < 8) { // Limit length
+                players[editingPlayerIndex] += char;
+            }
+        }
+        renderPlayerList();
+    }
+
+    // --- REBUILD ROWS ON STRUCTURE CHANGE ---
+    // If we added/removed players, we need to preserve existing data where possible
+    function reloadRowsForNewLayout() {
+        const rows = document.querySelectorAll('.round-row');
+        // Extract data first? No, simple reload from memory for now or just clear and rebuild if structure changes mid-game is tricky.
+        // Simplified approach: Clear rows and rebuild based on saved game state, but adapted to new width.
+        // NOTE: Removing a player deletes their data column index. Adding adds an empty column.
+        
+        // Save current visible data map
+        let currentData = [];
+        rows.forEach(row => {
+            let rowData = [];
+            let inputs = row.querySelectorAll('.score-display');
+            inputs.forEach(input => rowData.push(input.innerText));
+            currentData.push(rowData);
+        });
+
+        document.getElementById('roundsList').innerHTML = '';
+        
+        // Rebuild
+        currentData.forEach((rowData, rIdx) => {
+            const row = document.createElement('div');
+            row.className = 'round-row';
+            let html = `<div class="round-num">${rIdx + 1}</div>`;
+            
+            // Re-map old data to new columns. 
+            // If new cols > old cols, padding. If new cols < old, truncation.
+            for(let i=0; i < players.length; i++) {
+                let val = (i < rowData.length) ? rowData[i] : "";
+                html += `<div class="score-cell"><div id="r${rIdx+1}-p${i}" class="score-display p${i}-val" onclick="openScoring(this, ${i})">${val}</div></div>`;
+            }
+            row.innerHTML = html;
+            document.getElementById('roundsList').appendChild(row);
+        });
+        
+        // If we added a row via game logic before, keep activeRowId
+    }
+
+    // --- GAME LOGIC ---
     function saveGame() {
         const rows = document.querySelectorAll('.round-row');
         const state = { activeRowId: activeRowId, rounds: [] };
         rows.forEach(row => {
             const roundId = row.querySelector('.round-num').innerText;
             const scores = [];
-            for(let i=0; i<4; i++) {
+            for(let i=0; i<players.length; i++) {
                 const cell = document.getElementById(`r${roundId}-p${i}`);
                 scores.push(cell ? cell.innerText : "");
             }
@@ -400,7 +583,7 @@
                     activeRowId = parseInt(roundData.id) - 1; 
                     addRow(false);
                     roundData.scores.forEach((score, i) => {
-                        if(score !== "") {
+                        if(i < players.length && score !== "") {
                             const cell = document.getElementById(`r${roundData.id}-p${i}`);
                             if(cell) { cell.innerText = score; cell.style.color = "var(--text-color)"; }
                         }
@@ -417,7 +600,7 @@
         const row = document.createElement('div');
         row.className = 'round-row';
         let html = `<div class="round-num">${activeRowId}</div>`;
-        for(let i=0; i<4; i++) {
+        for(let i=0; i<players.length; i++) {
             html += `<div class="score-cell"><div id="r${activeRowId}-p${i}" class="score-display p${i}-val" onclick="openScoring(this, ${i})"></div></div>`;
         }
         row.innerHTML = html;
@@ -434,7 +617,7 @@
             playClick(); localStorage.removeItem('flip7_save');
             document.getElementById('roundsList').innerHTML = '';
             activeRowId = 0;
-            for(let i=0; i<4; i++) { document.getElementById(`total-${i}`).innerText = '0'; }
+            renderFooter(); // Clear totals visually
             addRow(); calculateTotals(); closeVictory();
         }
     }
@@ -512,22 +695,23 @@
     function closeOverlay() { playClick(); document.getElementById('scoringOverlay').style.display = 'none'; }
 
     function calculateTotals() {
-        let sums = [0, 0, 0, 0];
-        for (let i = 0; i < 4; i++) {
+        let sums = new Array(players.length).fill(0);
+        for (let i = 0; i < players.length; i++) {
             document.querySelectorAll(`.p${i}-val`).forEach(el => sums[i] += parseInt(el.innerText) || 0);
-            document.getElementById(`total-${i}`).innerText = sums[i];
+            if(document.getElementById(`total-${i}`))
+                document.getElementById(`total-${i}`).innerText = sums[i];
         }
         const max = Math.max(...sums);
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < players.length; i++) {
             const box = document.getElementById(`box-${i}`);
-            (sums[i] === max && max > 0) ? box.classList.add('is-leading') : box.classList.remove('is-leading');
+            if(box) (sums[i] === max && max > 0) ? box.classList.add('is-leading') : box.classList.remove('is-leading');
         }
         return sums;
     }
 
     function checkWinCondition() {
         let roundComplete = true;
-        for(let i=0; i<4; i++) {
+        for(let i=0; i<players.length; i++) {
             let cell = document.getElementById(`r${activeRowId}-p${i}`);
             if(!cell || cell.innerText === "") { roundComplete = false; break; }
         }
@@ -536,13 +720,12 @@
         let totals = calculateTotals();
         let max = Math.max(...totals);
         let winners = [];
-        for(let i=0; i<4; i++) { if(totals[i] === max) winners.push(i); }
+        for(let i=0; i<players.length; i++) { if(totals[i] === max) winners.push(i); }
 
         if(winners.length === 1 && max >= 200) {
             playVictorySound();
             showVictory(winners[0], totals);
         } else {
-            // AUTOMATICALLY ADD NEW ROUND
             setTimeout(() => addRow(), 800); 
         }
     }
@@ -552,7 +735,7 @@
         document.getElementById('winnerName').innerText = players[winnerIndex];
         const scoresList = document.getElementById('finalScoresList');
         scoresList.innerHTML = '';
-        for(let i=0; i<4; i++) {
+        for(let i=0; i<players.length; i++) {
             let div = document.createElement('div');
             div.className = 'final-score-box';
             div.innerHTML = `<div class="fs-label">${players[i]}</div><div class="fs-val">${totals[i]}</div>`;
@@ -571,14 +754,13 @@
         const content = document.getElementById('statsContent');
         content.innerHTML = '';
 
-        for(let i=0; i<4; i++) {
+        for(let i=0; i<players.length; i++) {
             const diff200 = 200 - totals[i];
             const diffLeader = max - totals[i];
             const isLeader = (diffLeader === 0);
             
             let pct = Math.min((totals[i] / 200) * 100, 100);
             
-            // Logic: Hide the "BEHIND" label text if leader, but keep structure
             let behindHTML = isLeader 
                 ? `<div class="stat-metric" style="justify-content: center;">
                      <span class="stat-metric-val val-gold">Leader</span>
@@ -594,13 +776,11 @@
             row.className = 'stat-row';
             row.innerHTML = `
                 <div class="stat-name">${players[i]}</div>
-                
                 <div class="progress-track">
                     <div class="progress-bar" style="width: ${pct}%;"></div>
                     <span class="pb-text-left">${totals[i]}</span>
                     <span class="pb-text-right">${to200Text}</span>
                 </div>
-
                 ${behindHTML}
             `;
             content.appendChild(row);
@@ -608,14 +788,9 @@
         document.getElementById('statsOverlay').style.display = 'flex';
     }
 
-    function closeStats() {
-        playClick();
-        document.getElementById('statsOverlay').style.display = 'none';
-    }
-
+    function closeStats() { playClick(); document.getElementById('statsOverlay').style.display = 'none'; }
     function showManual() { playClick(); manualValue = ""; document.getElementById('manualDisplay').innerText = "0"; document.getElementById('manualModal').style.display = 'block'; }
     function closeManual() { playClick(); document.getElementById('manualModal').style.display = 'none'; }
-
     function pressNum(v) {
         playClick();
         if (v === 'C') manualValue = "";
