@@ -22,7 +22,6 @@
             --card-bonus-bg: #e17055;
             --card-mult-bg: #a29bfe;
             
-            /* Dynamic Grid: Will be updated by JS */
             --grid-cols: 50px 1fr 1fr 1fr 1fr;
         }
 
@@ -35,15 +34,14 @@
 
         /* HEADER */
         .app-header { flex-shrink: 0; width: 100%; background: var(--header-gradient); z-index: 50; padding-top: env(safe-area-inset-top); box-shadow: 0 4px 15px rgba(255, 94, 98, 0.4); }
-        .header-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: var(--grid-cols); text-align: center; align-items: center; padding: 15px 0; transition: all 0.3s; }
-        .header-name { font-size: 2.5rem; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px; }
-        .header-name:active { transform: scale(0.95); opacity: 0.8; }
+        .header-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: var(--grid-cols); text-align: center; align-items: center; padding: 15px 0; }
+        .header-name { font-size: 2.5rem; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         /* CONTENT */
         .scroll-container { flex: 1; width: 100%; max-width: 1000px; margin: 0 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 180px; padding-top: 15px; }
-        .round-row { display: grid; grid-template-columns: var(--grid-cols); align-items: center; text-align: center; background: var(--card-bg); margin: 0 15px 12px 15px; padding: 10px 0; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: all 0.3s; }
+        .round-row { display: grid; grid-template-columns: var(--grid-cols); align-items: center; text-align: center; background: var(--card-bg); margin: 0 15px 12px 15px; padding: 10px 0; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .round-num { font-size: 1.2rem; color: #b2bec3; font-weight: 800; }
-        .score-cell { padding: 0 5px; overflow: hidden; }
+        .score-cell { padding: 0 5px; }
         .score-display { width: 90%; border: 2px solid #dfe6e9; border-radius: 12px; font-size: 2.8rem; font-weight: 800; background: #fafafa; display: flex; align-items: center; justify-content: center; height: 3.6rem; color: var(--text-color); margin: 0 auto; }
 
         /* CONTROLS */
@@ -56,9 +54,9 @@
         /* FOOTER */
         footer { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; box-shadow: 0 -8px 30px rgba(0,0,0,0.2); z-index: 100; border-radius: 20px 20px 0 0; cursor: pointer; }
         footer::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: -100px; background: var(--footer-bg); border-radius: 20px 20px 0 0; z-index: -1; }
-        .footer-content { width: 100%; max-width: 1000px; display: grid; grid-template-columns: var(--grid-cols); padding: 15px 0 25px 0; align-items: center; padding-bottom: calc(25px + env(safe-area-inset-bottom)); position: relative; transition: all 0.3s; }
-        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 2px; padding: 5px 0; overflow: hidden; }
-        .total-val { font-size: 4rem; font-weight: 900; line-height: 0.9; color: white; white-space: nowrap; }
+        .footer-content { width: 100%; max-width: 1000px; display: grid; grid-template-columns: var(--grid-cols); padding: 15px 0 25px 0; align-items: center; padding-bottom: calc(25px + env(safe-area-inset-bottom)); position: relative; }
+        .total-box { display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s; border-radius: 15px; margin: 0 5px; padding: 5px 0; }
+        .total-val { font-size: 5rem; font-weight: 900; line-height: 0.9; color: white; }
         .is-leading { background-color: #fdcb6e; box-shadow: 0 0 20px rgba(253, 203, 110, 0.4); }
         .is-leading .total-val { color: var(--text-color); }
         .crown { font-size: 1.5rem; height: 1.5rem; visibility: hidden; margin-bottom: 0px; }
@@ -106,7 +104,11 @@
         .v-btn-close { background: rgba(255,255,255,0.2); color: white; }
 
         /* STATS OVERLAY */
-        #statsOverlay { background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px); flex-direction: column; align-items: center; justify-content: center; color: white; z-index: 2000; }
+        #statsOverlay {
+            background: rgba(45, 52, 54, 0.98); backdrop-filter: blur(15px);
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; z-index: 2000;
+        }
         .stats-container { width: 90%; max-width: 850px; }
         .stats-title { font-size: 2.5rem; font-weight: 900; color: #fab1a0; text-align: center; margin-bottom: 40px; letter-spacing: 2px; }
         .stat-row { display: grid; grid-template-columns: 80px 1fr 240px; gap: 20px; background: rgba(255,255,255,0.1); margin-bottom: 25px; padding: 20px 30px; border-radius: 20px; align-items: center; }
@@ -125,7 +127,7 @@
         #manualModal { background: #2d3436; top: 50%; left: 50%; width: 500px; max-width: 95vw; height: auto; transform: translate(-50%, -50%); padding: 40px; border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: none; flex-direction: column; }
         #manualDisplay { color: white; font-size: 8rem; text-align: center; margin-bottom: 30px; font-weight: 900; line-height: 1; }
         .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
-        .num-btn { width: 100%; aspect-ratio: 1; font-size: 3.5rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: 700; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        .num-btn { width: 100%; aspect-ratio: 1; font-size: 4rem; border-radius: 50%; border: none; background: #636e72; color: white; font-weight: 700; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
         .num-btn:active { transform: translateY(2px); box-shadow: none; }
         .btn-clear { background: #d63031 !important; }
         .manual-actions-row { display: flex; flex-direction: column; gap: 15px; max-width: 400px; width: 100%; margin: 0 auto; }
@@ -170,16 +172,18 @@
             font-size: 1.2rem; font-weight: bold;
         }
 
-        /* CUSTOM KEYBOARD CONTAINER */
+        /* CUSTOM KEYBOARD CONTAINER - FIXED POSITION */
         .kb-container {
+            position: relative; /* Not absolute anymore */
+            margin-top: 15px; /* Sits right under the Add button */
             width: 100%; max-width: 900px;
             background: #2d3436;
-            padding: 10px 5px 30px 5px;
-            border-radius: 20px 20px 0 0;
-            position: absolute; bottom: 0;
+            padding: 20px 5px;
+            border-radius: 20px; /* Fully rounded */
             display: flex; flex-direction: column; gap: 8px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
+        
         .kb-row { display: flex; justify-content: center; gap: 6px; width: 100%; }
         .kb-key {
             background: #636e72; color: white;
@@ -288,6 +292,7 @@
 
 <div id="victoryOverlay">
     <div class="victory-title">WINNER!</div>
+    
     <div class="hulu-container">
         <svg width="180" height="240" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -302,8 +307,11 @@
             <path d="M35 68 Q50 75 65 68" stroke="#c0392b" stroke-width="4" fill="none" />
         </svg>
     </div>
+
     <div class="winner-name" id="winnerName">PLAYER</div>
+    
     <div class="final-scores" id="finalScoresList"></div>
+
     <div class="victory-actions">
         <button class="v-btn v-btn-close" onclick="closeVictory()">CLOSE</button>
         <button class="v-btn v-btn-new" onclick="startNewGameFromVictory()">NEW GAME</button>
@@ -443,7 +451,6 @@
         stopEditing();
         document.getElementById('playerManagerOverlay').style.display = 'none';
         initGrid(); // Refresh layout
-        // IMPORTANT: Re-render rows to match new player columns
         reloadRowsForNewLayout(); 
         calculateTotals();
         savePlayers();
@@ -507,7 +514,7 @@
             players[editingPlayerIndex] = currentName.slice(0, -1);
         } else if (char === 'CAPS') {
             // Toggle logic simplified for demo, assuming caps always for now
-        } else if (char === 'DONE') { // Handled by separate button usually
+        } else if (char === 'DONE') { 
             stopEditing();
             return;
         } else {
@@ -519,12 +526,8 @@
     }
 
     // --- REBUILD ROWS ON STRUCTURE CHANGE ---
-    // If we added/removed players, we need to preserve existing data where possible
     function reloadRowsForNewLayout() {
         const rows = document.querySelectorAll('.round-row');
-        // Extract data first? No, simple reload from memory for now or just clear and rebuild if structure changes mid-game is tricky.
-        // Simplified approach: Clear rows and rebuild based on saved game state, but adapted to new width.
-        // NOTE: Removing a player deletes their data column index. Adding adds an empty column.
         
         // Save current visible data map
         let currentData = [];
@@ -544,7 +547,6 @@
             let html = `<div class="round-num">${rIdx + 1}</div>`;
             
             // Re-map old data to new columns. 
-            // If new cols > old cols, padding. If new cols < old, truncation.
             for(let i=0; i < players.length; i++) {
                 let val = (i < rowData.length) ? rowData[i] : "";
                 html += `<div class="score-cell"><div id="r${rIdx+1}-p${i}" class="score-display p${i}-val" onclick="openScoring(this, ${i})">${val}</div></div>`;
@@ -552,8 +554,6 @@
             row.innerHTML = html;
             document.getElementById('roundsList').appendChild(row);
         });
-        
-        // If we added a row via game logic before, keep activeRowId
     }
 
     // --- GAME LOGIC ---
